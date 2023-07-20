@@ -12,6 +12,7 @@ namespace BitirmeProj.Data
             
         }
         public DbSet<Person> Persons { get; set; }
-       
+        public DbSet<Job> Jobs { get; set; }
+
     }
 }

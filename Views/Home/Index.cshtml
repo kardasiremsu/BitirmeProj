@@ -1,6 +1,7 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
+<link rel="stylesheet" href="~/css/home.css" asp-append-version="true" />
 
 
 <main class="centered-content">
@@ -19,6 +20,7 @@
         </form>
     </section>
 
+  
 
     <button class="add-job-btn" onclick="openPopup()">Post a Job</button>
     
@@ -30,21 +32,29 @@
             <p>
                 Job description and details will be displayed here.
             </p>
-            <a href="#" class="edit-btn" onclick="openPopup()">Edit</a>
-        </div>
+            <a href="#" class="edit-btn" onclick="viewDetail(1)">View Detail</a>
 
-        <div class="job-card">
+          
+
+        </div>
+        
+       
+          <div class="job-card">
             <h2>Job Title 2</h2>
             <p>
                 Job description and details will be displayed here.
             </p>
-            <a href="#" class="edit-btn" onclick="openPopup()">Edit</a>
+            <a href="#" class="edit-btn" onclick="viewDetail(2)">View Detail</a>
         </div>
+         
 
         <!-- Other job listings will be displayed here -->
         <!-- Button to open job posting form -->
      
     </section>
+
+    
+    <div class="overlay" id="overlay"></div>
 
     <div class="popup" id="popup-form">
         <h2>Post a New Job</h2>
@@ -80,7 +90,7 @@
                 <input type="url" id="apply-link" name="apply-link" required>
             </div>
 
-          
+            
 
             <button type="button" id="back-btn" onclick="goToPreviousField()" style="display: none;">Back</button>
             <button type="button" id="next-btn" onclick="goToNextField()">Next</button>
@@ -88,5 +98,20 @@
         </form>
         <button class="close-btn" onclick="closePopup()">Close</button>
     </div>
+
+    <div class="overlay" id="overlay"></div>
+    <div class="popup" id="popup-detail">
+        <h2>Job Details</h2>
+        <div id="job-details">
+            <h2></h2>
+            <p></p>
+        </div>
+        <button class="close-btn" onclick="closePopupDetail()">Close</button>
+    </div>
+
+    
+
+    <script src="~/js/home.js" asp-append-version="true"></script>
+
 </main>
 
