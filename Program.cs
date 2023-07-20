@@ -1,7 +1,13 @@
+using BitirmeProj.Data;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddRazorPages();
+builder.Services.AddDbContext<ApplicationDBContext>(options => options.UseSqlite(
+    builder.Configuration.GetConnectionString("Database")));
 
 var app = builder.Build();
 

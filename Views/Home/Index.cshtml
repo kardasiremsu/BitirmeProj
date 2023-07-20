@@ -2,7 +2,91 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+
+<main class="centered-content">
+
+    <h2>Research Job</h2>
+    <section class="job-filters">
+        <form>
+        
+            <label for="keyword">Keyword:</label>
+            <input type="text" id="keyword" name="keyword">
+
+            <label for="location">Location:</label>
+            <input type="text" id="location" name="location">
+
+            <button type="submit">Filter</button>
+        </form>
+    </section>
+
+
+    <button class="add-job-btn" onclick="openPopup()">Post a Job</button>
+    
+    
+    <section class="job-listings">
+        <!-- Job listings will be displayed here -->
+        <div class="job-card">
+            <h2>Job Title 1</h2>
+            <p>
+                Job description and details will be displayed here.
+            </p>
+            <a href="#" class="edit-btn" onclick="openPopup()">Edit</a>
+        </div>
+
+        <div class="job-card">
+            <h2>Job Title 2</h2>
+            <p>
+                Job description and details will be displayed here.
+            </p>
+            <a href="#" class="edit-btn" onclick="openPopup()">Edit</a>
+        </div>
+
+        <!-- Other job listings will be displayed here -->
+        <!-- Button to open job posting form -->
+     
+    </section>
+
+    <div class="popup" id="popup-form">
+        <h2>Post a New Job</h2>
+        <form action="#" method="POST" id="job-form">
+            <!-- Fields with unique IDs -->
+            <div id="field-1">
+                <label for="job-title">Job Title:</label>
+                <input type="text" id="job-title" name="job-title" required>
+            </div>
+
+            <div id="field-2" style="display: none;">
+                <label for="institution">Institution:</label>
+                <input type="text" id="institution" name="institution" required>
+            </div>
+
+            <div id="field-3" style="display: none;">
+                <label for="department">Department:</label>
+                <input type="text" id="department" name="department" required>
+            </div>
+
+            <div id="field-4" style="display: none;">
+                <label for="description">Job Description:</label>
+                <textarea id="description" name="description" rows="4" required></textarea>
+            </div>
+
+            <div id="field-5" style="display: none;">
+                <label for="requirements">Requirements:</label>
+                <textarea id="requirements" name="requirements" rows="4" required></textarea>
+            </div>
+
+            <div id="field-6" style="display: none;">
+                <label for="apply-link">Apply Link:</label>
+                <input type="url" id="apply-link" name="apply-link" required>
+            </div>
+
+          
+
+            <button type="button" id="back-btn" onclick="goToPreviousField()" style="display: none;">Back</button>
+            <button type="button" id="next-btn" onclick="goToNextField()">Next</button>
+            <button type="submit" id="submit-btn" style="display: none;">Submit</button>
+        </form>
+        <button class="close-btn" onclick="closePopup()">Close</button>
+    </div>
+</main>
+

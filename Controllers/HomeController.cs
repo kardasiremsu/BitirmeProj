@@ -23,6 +23,19 @@ namespace BitirmeProj.Controllers
             return View();
         }
 
+        public IActionResult MyJobs()
+        {
+            return View();
+
+        }
+        public IActionResult MyApplications()
+        {
+            return View();
+        }
+
+ 
+
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
