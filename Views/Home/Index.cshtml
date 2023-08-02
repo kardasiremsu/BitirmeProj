@@ -1,4 +1,6 @@
-﻿@{
+﻿@model IEnumerable<BitirmeProj.Models.Job>
+
+@{
     ViewData["Title"] = "Home Page";
 }
 <link rel="stylesheet" href="~/css/home.css" asp-append-version="true" />
@@ -6,51 +8,49 @@
 
 <main class="centered-content">
 
-    <h2>Research Job</h2>
+    <h3>Research Job</h3>
     <section class="job-filters">
-        <form>
-        
-            <label for="keyword">Keyword:</label>
-            <input type="text" id="keyword" name="keyword">
 
-            <label for="location">Location:</label>
-            <input type="text" id="location" name="location">
-
-            <button type="submit">Filter</button>
+        <form asp-action="Index" method="get">
+            <div class="form-action no-color">
+                <p>
+                    Title/Description:<input type="text" name="titleString" value="@ViewData["TitleFilter"]"/>
+                    Location:<input type="text" name="locationString" value="@ViewData["LocationFilter"]" />
+                    <input type="submit" value="Search" class="btn btn-success"/>
+                    <a asp-action="Index">Back to Full List </a>
+                </p>
+            </div>
         </form>
     </section>
-
-  
-
-    <button class="add-job-btn" onclick="openPopup()">Post a Job</button>
     
+    <button class="add-job-btn" onclick="openPopup()">Post a Job</button>
+
+
+    <section class="job-order">
+        <a asp-action="Index" asp-route-sortOrder="@ViewData["TitleSortParam"]">
+            Order By Title
+        </a>
+        <a asp-action="Index" asp-route-sortOrder="@ViewData["DateSortParam"]">
+            Order By Date
+        </a>
+
+    </section>
     
     <section class="job-listings">
-        <!-- Job listings will be displayed here -->
-        <div class="job-card">
-            <h2>Job Title 1</h2>
-            <p>
-                Job description and details will be displayed here.
-            </p>
-            <a href="#" class="edit-btn" onclick="viewDetail(1)">View Detail</a>
-
-          
-
-        </div>
-        
-       
-          <div class="job-card">
-            <h2>Job Title 2</h2>
-            <p>
-                Job description and details will be displayed here.
-            </p>
-            <a href="#" class="edit-btn" onclick="viewDetail(2)">View Detail</a>
-        </div>
-         
-
-        <!-- Other job listings will be displayed here -->
-        <!-- Button to open job posting form -->
      
+         @foreach (var item in Model)
+        {
+            <div class="job-card">
+                <h2>
+                   @Html.DisplayFor(modelItem => item.Title)
+                </h2>
+                <p>
+                    @Html.DisplayFor(modelItem => item.Description)
+                </p>
+                <a href="#" class="edit-btn" onclick="viewDetail(1)">View Detail</a>
+                <a href ="#" class= "submit-btn" onclick = "applyJob()"> Apply Job</a>
+            </div>
+        }
     </section>
 
     
@@ -58,7 +58,7 @@
 
     <div class="popup" id="popup-form">
         <h2>Post a New Job</h2>
-        <form action="#" method="POST" id="job-form">
+        <form action="Home/PostJob" method="POST" id="job-form">
             <!-- Fields with unique IDs -->
             <div id="field-1">
                 <label for="job-title">Job Title:</label>
@@ -66,13 +66,13 @@
             </div>
 
             <div id="field-2" style="display: none;">
-                <label for="institution">Institution:</label>
-                <input type="text" id="institution" name="institution" required>
+                <label for="institution">Job Location:</label>
+                <input type="text" id="job-location" name="job-location" required>
             </div>
 
             <div id="field-3" style="display: none;">
-                <label for="department">Department:</label>
-                <input type="text" id="department" name="department" required>
+                <label for="department">Job Type:</label>
+                <input type="text" id="job-type" name="job-type" required>
             </div>
 
             <div id="field-4" style="display: none;">
@@ -81,20 +81,19 @@
             </div>
 
             <div id="field-5" style="display: none;">
-                <label for="requirements">Requirements:</label>
-                <textarea id="requirements" name="requirements" rows="4" required></textarea>
+                <label for="requirements">Skills:</label>
+                <textarea id="skills" name="skills" rows="4" required></textarea>
             </div>
 
             <div id="field-6" style="display: none;">
-                <label for="apply-link">Apply Link:</label>
-                <input type="url" id="apply-link" name="apply-link" required>
+                <label for="requirements">Questions:</label>
+                <textarea id="questions" name="questions" rows="4" required></textarea>
             </div>
-
-            
-
+     
+         
             <button type="button" id="back-btn" onclick="goToPreviousField()" style="display: none;">Back</button>
             <button type="button" id="next-btn" onclick="goToNextField()">Next</button>
-            <button type="submit" id="submit-btn" style="display: none;">Submit</button>
+            <button type="submit" id="submit-btn" action="Home/PostJob" style="display: none;">Submit</button>
         </form>
         <button class="close-btn" onclick="closePopup()">Close</button>
     </div>

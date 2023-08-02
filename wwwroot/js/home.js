@@ -55,8 +55,6 @@ function goToPreviousField() {
 }
 
 function openPopup() {
-
-
     document.getElementById("overlay").style.display = "block";
 
     currentFieldIndex = 0;
