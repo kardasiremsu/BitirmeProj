@@ -24,7 +24,9 @@ namespace BitirmeProj.Models
 
 		public string? Description { get; set; }
 
-		public string? Skills { get; set; }
+        public string? Salary { get; set; }
+
+        public string? Skills { get; set; }
 
 		public string? Questions { get; set; }
 

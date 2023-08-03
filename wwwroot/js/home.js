@@ -5,6 +5,8 @@ const backButton = document.getElementById('back-btn');
 const nextButton = document.getElementById('next-btn');
 const submitButton = document.getElementById('submit-btn');
 
+
+
 function updateProgressIndicator() {
     progressSteps.forEach((step, index) => {
         if (index === currentFieldIndex) {
@@ -75,13 +77,11 @@ function viewDetail(jobId) {
     //document.getElementById("overlay").style.display = "block";
     // Replace the following lines with your actual data retrieval logic from the backend
     let jobTitle, jobDescription;
-    if (jobId === 1) {
-        jobTitle = "Job Title 1";
-        jobDescription = "This is the description for Job Title 1.";
-    } else if (jobId === 2) {
-        jobTitle = "Job Title 2";
-        jobDescription = "This is the description for Job Title 2.";
-    }
+    
+   
+    jobTitle = "Job Title " + jobId;
+    jobDescription = "This is the description for Job Title " + jobId;
+
 
     // Update the job details in the popup
     document.getElementById("job-details").innerHTML = `

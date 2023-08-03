@@ -35,7 +35,7 @@ namespace BitirmeProj.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> PostJob([Bind("ID,PersonID,Title,JobType,JobLocation,Description,Skills,Questions,Active,Date")] Job job)
+        public async Task<IActionResult> PostJob([Bind("ID,PersonID,Title,JobType,JobLocation,Description,Salary,Skills,Questions,Active,Date")] Job job)
         {
             if (ModelState.IsValid)
             {

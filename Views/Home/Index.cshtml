@@ -13,29 +13,36 @@
 
         <form asp-action="Index" method="get">
             <div class="form-action no-color">
-                <p>
-                    Title/Description:<input type="text" name="titleString" value="@ViewData["TitleFilter"]"/>
-                    Location:<input type="text" name="locationString" value="@ViewData["LocationFilter"]" />
-                    <input type="submit" value="Search" class="btn btn-success"/>
-                    <a asp-action="Index">Back to Full List </a>
+                <p class="input-group-text">
+                    <input placeholder="Title/Description "type="text" class = "input-group" name="titleString" value="@ViewData["TitleFilter"]"/>
+                    <input placeholder="Location" type="text" class="input-group" name="locationString" value="@ViewData["LocationFilter"]" />
+                    <input type="submit" value="Search" class="btn btn-secondary"/>
+                    <a class= "btn btn-outline-secondary" asp-action="Index">Back to Full List </a>
                 </p>
             </div>
         </form>
     </section>
     
-    <button class="add-job-btn" onclick="openPopup()">Post a Job</button>
 
 
     <section class="job-order">
-        <a asp-action="Index" asp-route-sortOrder="@ViewData["TitleSortParam"]">
+
+        <a class = "btn btn-outline-primary" asp-action="Index" asp-route-sortOrder="@ViewData["TitleSortParam"]">
             Order By Title
         </a>
-        <a asp-action="Index" asp-route-sortOrder="@ViewData["DateSortParam"]">
+        <a class = "btn btn-outline-primary"  asp-action="Index" asp-route-sortOrder="@ViewData["DateSortParam"]">
             Order By Date
         </a>
 
     </section>
     
+    <br />
+    <section class="job-posting">
+
+    <div class="form-control form-control-lg" onclick="openPopup()">Post a Job</div>
+
+    </section>
+    <br/>
     <section class="job-listings">
      
          @foreach (var item in Model)
@@ -46,9 +53,12 @@
                 </h2>
                 <p>
                     @Html.DisplayFor(modelItem => item.Description)
+                    
                 </p>
-                <a href="#" class="edit-btn" onclick="viewDetail(1)">View Detail</a>
-                <a href ="#" class= "submit-btn" onclick = "applyJob()"> Apply Job</a>
+
+                <a href="#" class="btn btn-info" onclick="viewDetail(@item.ID)">View Detail</a>
+                               
+                <a href ="#" class= "btn btn-success" onclick = "applyJob()"> Apply Job</a>
             </div>
         }
     </section>
@@ -81,11 +91,17 @@
             </div>
 
             <div id="field-5" style="display: none;">
+                <label for="salary">Salary:</label>
+                <textarea id="salary" name="salary" rows="1" required></textarea>
+            </div>
+
+            <div id="field-6" style="display: none;">
                 <label for="requirements">Skills:</label>
                 <textarea id="skills" name="skills" rows="4" required></textarea>
             </div>
 
-            <div id="field-6" style="display: none;">
+
+            <div id="field-7" style="display: none;">
                 <label for="requirements">Questions:</label>
                 <textarea id="questions" name="questions" rows="4" required></textarea>
             </div>

@@ -28,7 +28,11 @@
             margin: 5px;
         }
 
-
+.job-posting {
+    display: grid;
+    gap: 20px;
+    box-shadow : 0 5px 7px rgba(0, 0, 0, 0.1);
+}
 .job-listings {
     display: grid;
     grid-template-columns: repeat(1, 1fr);
