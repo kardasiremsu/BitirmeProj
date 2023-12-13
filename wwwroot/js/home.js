@@ -79,8 +79,8 @@ function viewDetail(jobId) {
     let jobTitle, jobDescription;
     
    
-    jobTitle = "Job Title " + jobId;
-    jobDescription = "This is the description for Job Title " + jobId;
+    jobTitle = "Test Job " + jobId;
+    jobDescription = "DescriptionTest " + jobId;
 
 
     // Update the job details in the popup

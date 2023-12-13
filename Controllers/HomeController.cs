@@ -4,8 +4,7 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BitirmeProj.Data;
-using Microsoft.Data.Sqlite;
-
+///using Microsoft.Data.Sqlite;
 using System;
 using System.Collections.Generic;
 using System.Linq;

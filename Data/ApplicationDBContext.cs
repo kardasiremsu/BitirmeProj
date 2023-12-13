@@ -1,5 +1,4 @@
 ﻿using BitirmeProj.Models;
-using Microsoft.EntityFrameworkCore;
 
 
 namespace BitirmeProj.Data
@@ -16,3 +15,5 @@ namespace BitirmeProj.Data
        
     }
 }
+
+
