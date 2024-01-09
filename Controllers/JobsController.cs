@@ -23,22 +23,22 @@ namespace BitirmeProj.Controllers
         // GET: Jobs
         public async Task<IActionResult> Index()
         {
-            return _context.Jobs != null ?
-                       View(await _context.Jobs.ToListAsync()) :
+            return _context.JobListings != null ?
+                       View(await _context.JobListings.ToListAsync()) :
                        Problem("Entity set 'ApplicationDBContext.Jobs'  is null.");
         }
 
         // GET: Jobs/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.Jobs == null)
+            if (id == null || _context.JobListings == null)
             {
                 return NotFound();
             }
 
-            var job = await _context.Jobs
+            var job = await _context.JobListings
                 .Include(j => j.Applications)
-                .FirstOrDefaultAsync(m => m.ID == id);
+                .FirstOrDefaultAsync(m => m.JobID == id);
             if (job == null)
             {
                 return NotFound();
@@ -59,7 +59,7 @@ namespace BitirmeProj.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ID,PersonID,Title,JobType,JobLocation,Description,Skills,Questions,Active,Date")] Job job)
+        public async Task<IActionResult> Create([Bind("ID,PersonID,Title,JobType,JobLocation,Description,Skills,Questions,Active,Date")] JobListing job)
         {
             if (ModelState.IsValid)
             {
@@ -67,24 +67,24 @@ namespace BitirmeProj.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["PersonID"] = new SelectList(_context.Persons, "ID", "ID", job.PersonID);
+            ViewData["PersonID"] = new SelectList(_context.Users, "ID", "ID", job.PostedBy);
             return View(job);
         }
 
         // GET: Jobs/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.Jobs == null)
+            if (id == null || _context.JobListings == null)
             {
                 return NotFound();
             }
 
-            var job = await _context.Jobs.FindAsync(id);
+            var job = await _context.JobListings.FindAsync(id);
             if (job == null)
             {
                 return NotFound();
             }
-            ViewData["PersonID"] = new SelectList(_context.Persons, "ID", "ID", job.PersonID);
+            ViewData["PersonID"] = new SelectList(_context.Users, "ID", "ID", job.PostedBy);
             return View(job);
         }
 
@@ -93,9 +93,9 @@ namespace BitirmeProj.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ID,PersonID,Title,JobType,JobLocation,Description,Skills,Questions,Active,Date")] Job job)
+        public async Task<IActionResult> Edit(int id, [Bind("ID,PersonID,Title,JobType,JobLocation,Description,Skills,Questions,Active,Date")] JobListing job)
         {
-            if (id != job.ID)
+            if (id != job.JobID)
             {
                 return NotFound();
             }
@@ -109,7 +109,7 @@ namespace BitirmeProj.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!JobExists(job.ID))
+                    if (!JobExists(job.JobID))
                     {
                         return NotFound();
                     }
@@ -127,14 +127,14 @@ namespace BitirmeProj.Controllers
         // GET: Jobs/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.Jobs == null)
+            if (id == null || _context.JobListings == null)
             {
                 return NotFound();
             }
 
-            var job = await _context.Jobs
+            var job = await _context.JobListings
                 .Include(j => j.Applications)
-                .FirstOrDefaultAsync(m => m.ID == id);
+                .FirstOrDefaultAsync(m => m.JobID == id);
             if (job == null)
             {
                 return NotFound();
@@ -148,14 +148,14 @@ namespace BitirmeProj.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Jobs == null)
+            if (_context.JobListings == null)
             {
                 return Problem("Entity set 'ApplicationDBContext.Jobs'  is null.");
             }
-            var job = await _context.Jobs.FindAsync(id);
+            var job = await _context.JobListings.FindAsync(id);
             if (job != null)
             {
-                _context.Jobs.Remove(job);
+                _context.JobListings.Remove(job);
             }
             
             await _context.SaveChangesAsync();
@@ -164,7 +164,7 @@ namespace BitirmeProj.Controllers
 
         private bool JobExists(int id)
         {
-          return (_context.Jobs?.Any(e => e.ID == id)).GetValueOrDefault();
+          return (_context.JobListings?.Any(e => e.JobID == id)).GetValueOrDefault();
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿@model IEnumerable<BitirmeProj.Models.Job>
+﻿@model IEnumerable<BitirmeProj.Models.JobListing>
 
 @{
     ViewData["Title"] = "Home Page";
@@ -49,14 +49,14 @@
         {
             <div class="job-card">
                 <h2>
-                   @Html.DisplayFor(modelItem => item.Title)
+                   @Html.DisplayFor(modelItem => item.JobTitle)
                 </h2>
                 <p>
-                    @Html.DisplayFor(modelItem => item.Description)
+                    @Html.DisplayFor(modelItem => item.JobDescription)
                     
                 </p>
 
-                <a href="#" class="btn btn-light" onclick="viewDetail(@item.ID)">View Detail</a>
+                <a href="#" class="btn btn-light" onclick="viewDetail(@item.JobID)">View Detail</a>
                                
                 <a href ="#" class= "btn btn-success" onclick = "applyJob()"> Apply Job</a>
             </div>
@@ -95,16 +95,6 @@
                 <textarea id="salary" name="salary" rows="1" required></textarea>
             </div>
 
-            <div id="field-6" style="display: none;">
-                <label for="requirements">Skills:</label>
-                <textarea id="skills" name="skills" rows="4" required></textarea>
-            </div>
-
-
-            <div id="field-7" style="display: none;">
-                <label for="requirements">Questions:</label>
-                <textarea id="questions" name="questions" rows="4" required></textarea>
-            </div>
      
          
             <button type="button" id="back-btn" onclick="goToPreviousField()" style="display: none;">Back</button>

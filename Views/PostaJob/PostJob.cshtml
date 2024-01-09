@@ -1,0 +1,75 @@
+﻿@model IEnumerable<BitirmeProj.Models.JobListing>
+
+@{
+    ViewData["Title"] = "Post a Job";
+}
+
+<!-- Button trigger modal
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#jobPostingModal">
+    Post a Job
+</button>-->
+<!-- Modal -->
+
+
+<div id="jobPostingModal" tabindex="-1" aria-labelledby="jobPostingModalLabel">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="jobPostingModalLabel">Post a Job</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <form asp-action="PostJob">
+                    @Html.AntiForgeryToken()
+                    <div class="form-group">
+                        <label for="jobTitle">Job Title</label>
+                        <input type="text" class="form-control" id="jobTitle" name="JobTitle" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="jobDescription">Job Description</label>
+                        <textarea class="form-control" id="jobDescription" name="JobDescription" rows="4" required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="applicationDeadline">Application Deadline</label>
+                        <input type="datetime-local" class="form-control" id="applicationDeadline" name="ApplicationDeadline" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="jobLocation">Job Location</label>
+                        <input type="text" class="form-control" id="jobLocation" name="JobLocation" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="workPlaceType">Work Place Type</label>
+                        <input type="number" class="form-control" id="workPlaceType" name="WorkPlaceType" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="jobType">Job Type</label>
+                        <input type="number" class="form-control" id="jobType" name="JobType" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="experienceLevel">Experience Level</label>
+                        <input type="number" class="form-control" id="experienceLevel" name="ExperienceLevel" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="salary">Salary</label>
+                        <input type="number" class="form-control" id="salary" name="Salary" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="salaryCurrency">Salary Currency</label>
+                        <input type="text" class="form-control" id="salaryCurrency" name="SalaryCurrency" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Post Job</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

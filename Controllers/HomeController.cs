@@ -34,7 +34,7 @@ namespace BitirmeProj.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> PostJob([Bind("ID,PersonID,Title,JobType,JobLocation,Description,Salary,Skills,Questions,Active,Date")] Job job)
+        public async Task<IActionResult> PostJob([Bind("ID,PersonID,JobTitle,JobType,JobLocation,Description,Salary,IsActive,Date")] JobListing job)
         {
             if (ModelState.IsValid)
             {
@@ -42,14 +42,14 @@ namespace BitirmeProj.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["PersonID"] = new SelectList(_context.Persons, "ID", "ID", job.PersonID);
+            ViewData["PersonID"] = new SelectList(_context.Users, "ID", "ID", job.PostedBy);
             return View(job);
         }
 
         // GET: Jobs
         public async Task<IActionResult> Index(string sortOrder, string titleString, string locationString)
         {
-            var jobs = from j in _context.Jobs select j;
+            var jobs = from j in _context.JobListings select j;
 
             ViewData["TitleSortParam"] = String.IsNullOrEmpty(sortOrder) ? "titleDesc" : "";
             ViewData["DateSortParam"] = sortOrder == "date" ? "dataDesc" : "date";
@@ -58,7 +58,7 @@ namespace BitirmeProj.Controllers
 
             if (!String.IsNullOrEmpty(titleString))
             {
-                jobs = jobs.Where(j => j.Title.Contains(titleString) || j.Description.Contains(titleString));
+                jobs = jobs.Where(j => j.JobTitle.Contains(titleString) || j.JobDescription.Contains(titleString));
             }
 
             ViewData["LocationFilter"] = locationString;
@@ -72,16 +72,16 @@ namespace BitirmeProj.Controllers
             switch (sortOrder)
             {
                 case "titleDesc":
-                    jobs = jobs.OrderByDescending(j => j.Title);
+                    jobs = jobs.OrderByDescending(j => j.JobTitle);
                     break;
                 case "date":
-                    jobs = jobs.OrderBy(j => j.Date);
+                    jobs = jobs.OrderBy(j => j.JobCreatedDate);
                     break;
                 case "dataDesc":
-                    jobs = jobs.OrderByDescending(j => j.Date);
+                    jobs = jobs.OrderByDescending(j => j.JobCreatedDate);
                     break;
                 default:
-                    jobs = jobs.OrderBy(j => j.Title);
+                    jobs = jobs.OrderBy(j => j.JobTitle);
                     break;
             }
 
