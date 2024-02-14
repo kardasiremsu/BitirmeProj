@@ -7,8 +7,8 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDBContext>(options =>
-{
-    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+{  
+   options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
 });
 var app = builder.Build();
 

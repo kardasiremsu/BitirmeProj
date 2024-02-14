@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using BitirmeProj.Data;
 using BitirmeProj.Models;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Configuration;
 
 namespace BitirmeProj.Controllers
 {
@@ -15,10 +17,12 @@ namespace BitirmeProj.Controllers
     {
         // GET: Job/PostJob
         private readonly ApplicationDBContext _context;
+        private readonly IConfiguration _configuration;
 
-        public PostaJobController(ApplicationDBContext context)
+        public PostaJobController(ApplicationDBContext context, IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration;
         }
 
 
@@ -35,41 +39,52 @@ namespace BitirmeProj.Controllers
             return View();
         }
 
-  
-       
+
+
         [HttpPost]
-        [ValidateAntiForgeryToken] // Add this attribute for security
-        public async Task<IActionResult> PostJob([Bind("JobID,JobTitle,JobDescription,ApplicationDeadline,PostedBy,JobLocation,WorkPlaceType,JobType,ExperienceLevel,Salary,SalaryCurrency,IsActive,JobCreatedDate")] JobListing job)
+        [ValidateAntiForgeryToken]
+        public ActionResult PostJob(string jobTitle, string jobDescription, DateTime applicationDeadline, string jobLocation, int workPlaceType, int jobType, int experienceLevel, decimal salary, int salaryCurrency)
         {
-            if (ModelState.IsValid)
+            try
             {
-                try
+                System.Diagnostics.Debug.WriteLine("try");
+                // Retrieve the connection string from appsettings.json
+                string connectionString = _configuration.GetConnectionString("DefaultConnection");
+
+                using (SqlConnection connection = new SqlConnection(connectionString))
                 {
-                    // Set additional properties if needed before saving
-                    job.JobCreatedDate = DateTime.Now; // For example, setting the creation date
-                    // Assuming PostedBy is the current user's ID, replace this with your actual logic to get the current user's ID
-                    job.PostedBy = 1; 
-                    job.JobID = 3;
-                    
-                    _context.JobListings.Add(job);
-                    await _context.SaveChangesAsync();
-                    return RedirectToAction(nameof(JobPostedSuccessfully));
+                    connection.Open();
+                    // SQL query to insert data into the database
+                    string sql = $@"INSERT INTO joblistings (JobID, JobTitle, JobDescription, ApplicationDeadline, PostedBy, JobLocation, WorkPlaceType, JobType, ExperienceLevel, Salary, SalaryCurrency, isActive, JobCreatedDate)
+                                    VALUES (@JobID, @JobTitle, @JobDescription, @ApplicationDeadline, @PostedBy, @JobLocation, @WorkPlaceType, @JobType, @ExperienceLevel, @Salary, @SalaryCurrency, @isActive, @JobCreatedDate)";
+
+                    using (SqlCommand command = new SqlCommand(sql, connection))
+                    {
+                        // Use parameters to prevent SQL injection
+                        command.Parameters.AddWithValue("@JobID", 3);
+
+                        command.Parameters.AddWithValue("@JobTitle", jobTitle);
+                        command.Parameters.AddWithValue("@JobDescription", jobDescription);
+                        command.Parameters.AddWithValue("@ApplicationDeadline", applicationDeadline);
+                        command.Parameters.AddWithValue("@PostedBy", 1);
+                        command.Parameters.AddWithValue("@JobLocation", jobLocation);
+                        command.Parameters.AddWithValue("@WorkPlaceType", workPlaceType);
+                        command.Parameters.AddWithValue("@JobType", jobType);
+                        command.Parameters.AddWithValue("@ExperienceLevel", experienceLevel);
+                        command.Parameters.AddWithValue("@Salary", salary);
+                        command.Parameters.AddWithValue("@SalaryCurrency", salaryCurrency);
+                        command.Parameters.AddWithValue("@isActive", 1);
+                        command.Parameters.AddWithValue("@jobCreatedDate", "10-10-2023");
+                        command.ExecuteNonQuery();
+                    }
                 }
-                catch (Exception ex)
-                {
-               
-                    return Problem($"Error while posting the job: {ex.Message}");
-                }
+                return Content("Job listing created successfully");
             }
-
-            // If ModelState is not valid, return to the same view with validation errors
-            return View(job);
-        }
-
-        // GET: Job/JobPostedSuccessfully
-        public ActionResult JobPostedSuccessfully()
-        {
-            return View();
+            catch (Exception ex)
+            {
+                return Problem($"Error while posting the job: {ex.Message}");
+            }
         }
     }
 }
+

@@ -116,6 +116,7 @@
                             <option value="yalova">Yalova</option>
                             <option value="yozgat">Yozgat</option>
                             <option value="zonguldak">Zonguldak</option>
+                            <option value="foreigncountry">Foreign Country</option>
                         </select>
                     </div>
 
@@ -187,60 +188,62 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.JobTitle)
+@Html.DisplayNameFor(model => model.JobTitle)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.JobType)
+@Html.DisplayNameFor(model => model.JobType)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.JobLocation)
+@Html.DisplayNameFor(model => model.JobLocation)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.JobDescription)
+@Html.DisplayNameFor(model => model.JobDescription)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Salary)
+@Html.DisplayNameFor(model => model.Salary)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.IsActive)
+@Html.DisplayNameFor(model => model.IsActive)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.JobCreatedDate)
+@Html.DisplayNameFor(model => model.JobCreatedDate)
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.JobTitle)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.JobType)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.JobLocation)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.JobDescription)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Salary)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.IsActive)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.JobCreatedDate)
-                </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.JobID">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.JobID">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.JobID">Delete</a>
-                </td>
-            </tr>
-        }
+@foreach (var item in Model)
+{
+                <tr>
+                    <td>
+            @Html.DisplayFor(modelItem => item.JobTitle)
+                    </td>
+                    <td>
+            @Html.DisplayFor(modelItem => item.JobType)
+                    </td>
+                    <td>
+            @Html.DisplayFor(modelItem => item.JobLocation)
+                    </td>
+                    <td>
+            @Html.DisplayFor(modelItem => item.JobDescription)
+                    </td>
+                    <td>
+            @Html.DisplayFor(modelItem => item.Salary)
+                    </td>
+                    <td>
+            @Html.DisplayFor(modelItem => item.IsActive)
+                    </td>
+                    <td>
+            @Html.DisplayFor(modelItem => item.JobCreatedDate)
+                    </td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.JobID">Edit</a> |
+                        <a asp-action="Details" asp-route-id="@item.JobID">Details</a> |
+                        <a asp-action="Delete" asp-route-id="@item.JobID">Delete</a>
+                    </td>
+                </tr>
+}
     </tbody>
 </table>
+
+
