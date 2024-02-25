@@ -1,10 +1,28 @@
-﻿@model IEnumerable<BitirmeProj.Models.JobListing>
+﻿@using BitirmeProj.Data
+@using BitirmeProj.Utilities
+@model IEnumerable<BitirmeProj.Models.JobListing>
+@inject ApplicationDBContext _context // Inject ApplicationDBContext into the view
 
 @{
     ViewData["Title"] = "Home Page";
 }
 <link rel="stylesheet" href="~/css/home.css" asp-append-version="true" />
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+<style>
+    .job-listings {
+        background-color: darkgray; /* Gray background */
+        padding: 20px;
+    }
 
+    .job-card {
+        background-color: #ffffff; /* White background */
+        margin-bottom: 20px;
+        border-radius: 5px;
+        padding: 20px;
+    }
+    
+    
+</style>
 
 <main class="centered-content">
 
@@ -45,11 +63,115 @@
 
     </section>
     <br/>
+
+    @section Scripts {
+
+        <script>
+            function viewJobDetails(job) {
+                var applicationDeadlineDateOnly = new Date(job.applicationDeadline).toLocaleDateString();
+
+                // Construct the detailed job information
+                var details = "<p><strong>Title:</strong> " + job.jobTitle + "</p>" +
+                    "<p><strong>Description:</strong> " + job.jobDescription + "</p>" +
+                    "<p><strong>Location:</strong> " + job.jobLocation + "</p>" +
+                    "<p><strong>Type:</strong> " + getJobTypeText(job.jobType) + "</p>" +
+                    "<p><strong>Application Deadline:</strong> " + applicationDeadlineDateOnly + "</p>" +
+                    "<p><strong>Experience Level:</strong> " + job.experienceLevel + "</p>" +
+                    "<p><strong>Salary:</strong> " + job.salary + "</p>";
+
+                // Update modal content with job details
+                $('#jobDetailsModal .modal-body').html(details);
+
+                // Show the modal
+                $('#jobDetailsModal').modal('show');
+            }
+
+            function editJob(jobId) {
+                // Redirect the user to the edit page with the jobId
+                window.location.href = '/Job/Edit/' + jobId;
+            }
+
+            function applyJob(jobId) {
+                // Add logic to handle applying to the job
+                console.log('Applying to job with ID ' + jobId);
+            }
+            function getJobTypeText(jobType) {
+                
+                // Replace this with your actual logic to retrieve job type text from dictionary
+                var jobTypeOptions = @Html.Raw(Json.Serialize(JobApplicationOptions.JobTypeOptions));
+                return jobTypeOptions[jobType] || jobType;
+            }
+        </script>
+    }
+
+    <!-- Modal -->
+    <div class="modal fade" id="jobDetailsModal" tabindex="-1" role="dialog" aria-labelledby="jobDetailsModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="jobDetailsModalLabel">Job Details</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Job details will be inserted here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" onclick="editJob()">Edit</button>
+                    <button type="button" class="btn btn-primary" onclick="applyJob()">Apply</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="container">
+
+    
+    @foreach (var item in Model)
+    {
+            var postedByFullName = UserService.GetUserFullName(item.PostedBy, _context); // Assuming _context is available in your Razor view or controller
+
+            <div class="row justify-content-center">
+
+            <div class="col-md-6">
+
+        <div class="job-card">
+            <h2>@Html.DisplayFor(modelItem => item.JobTitle)</h2>
+            <p>@Html.DisplayFor(modelItem => item.JobDescription)</p>
+                        <p><strong>Posted By:</strong> @postedByFullName</p>
+
+            <button type="button" class="btn btn-primary" onclick="viewJobDetails({
+            jobID: '@item.JobID',
+            jobTitle: '@Html.Raw(item.JobTitle)',
+            jobDescription: '@Html.Raw(item.JobDescription)',
+            jobLocation: '@Html.Raw(item.JobLocation)',
+            jobType: '@item.JobType',
+            applicationDeadline: '@item.ApplicationDeadline',
+            experienceLevel: '@item.ExperienceLevel',
+            salary: '@item.Salary'
+        })">
+                View Job Details
+            </button>
+            </div>
+        </div>
+            </div>
+
+
+    }
+    </div>
+
+    <!--
     <section class="job-listings">
-     
+        
          @foreach (var item in Model)
         {
+            <div class="col-md-6">
             <div class="job-card">
+
                 <h2>
                    @Html.DisplayFor(modelItem => item.JobTitle)
                 </h2>
@@ -58,13 +180,25 @@
                     
                 </p>
 
-                <a href="#" class="btn btn-light" onclick="viewDetail(@item.JobID)">View Detail</a>
+                <a href="#" class="btn btn-light" onclick=
+               "viewDetail({
+               jobID: '@item.JobID' ,
+               jobTitle: '@Html.Raw(item.JobTitle)' ,
+               jobDescription: '@Html.Raw(item.JobDescription)' ,
+               jobLocation: '@Html.Raw(item.JobLocation)' ,
+               jobType: '@item.JobType' ,
+               applicationDeadline: '@item.ApplicationDeadline' ,
+               experienceLevel: '@item.ExperienceLevel' ,
+               salary: '@item.Salary'})">
+                
+                View Detail</a>
                                
                 <a href ="#" class= "btn btn-success" onclick = "applyJob()"> Apply Job</a>
             </div>
+            </div>
         }
     </section>
-
+    -->
     
     <div class="overlay" id="overlay"></div>
 

@@ -22,7 +22,9 @@ namespace BitirmeProj.Controllers
         // GET: People
         public async Task<IActionResult> Index()
         {
-              return _context.Users != null ? 
+            
+              return _context.Users != null ?
+                            
                           View(await _context.Users.ToListAsync()) :
                           Problem("Entity set 'ApplicationDBContext.Users'  is null.");
         }

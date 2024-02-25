@@ -1,4 +1,5 @@
 ﻿using BitirmeProj.Models;
+using Microsoft.EntityFrameworkCore;
 using static System.Net.Mime.MediaTypeNames;
 using Application = BitirmeProj.Models.Application;
 
@@ -28,6 +29,7 @@ namespace BitirmeProj.Data
         public DbSet<JobPreference> JobPreferences { get; set; }
 
     }
+ 
 }
 
 

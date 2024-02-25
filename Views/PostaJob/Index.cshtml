@@ -1,7 +1,9 @@
-﻿@model IEnumerable<BitirmeProj.Models.JobListing>
+﻿@using BitirmeProj.Utilities;
+
+@model IEnumerable<BitirmeProj.Models.JobListing>
 
 @{
-    ViewData["Title"] = "Job List";
+    ViewData["Title"] = "Post a Job";
 }
 <!--
 <h1 style="text-align:center">Post a Job</h1>
@@ -23,7 +25,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form asp-action="PostJob" asp-controller="PostaJob" method="post">
+                <form id= "postJobForm" asp-action="PostJob" asp-controller="PostaJob" method="post">
                     @Html.AntiForgeryToken()
                     <div class="form-group">
                         <label for="jobTitle">Job Title</label>
@@ -39,151 +41,137 @@
                         <label for="applicationDeadline">Application Deadline</label>
                         <input type="date" class="form-control" id="applicationDeadline" name="ApplicationDeadline" required>
                     </div>
-
                     <div class="form-group">
-                        <label for="jobLocation">Job Location</label>
-                        <select id="jobLocation" class="form-select mt-2" aria-label="Default select example">
-                            <option value="adana">Adana</option>
-                            <option value="adiyaman">Adıyaman</option>
-                            <option value="afyonkarahisar">Afyonkarahisar</option>
-                            <option value="agri">Ağrı</option>
-                            <option value="amasya">Amasya</option>
-                            <option value="ankara">Ankara</option>
-                            <option value="antalya">Antalya</option>
-                            <option value="artvin">Artvin</option>
-                            <option value="aydin">Aydın</option>
-                            <option value="balikesir">Balıkesir</option>
-                            <option value="bilecik">Bilecik</option>
-                            <option value="bingol">Bingöl</option>
-                            <option value="bitlis">Bitlis</option>
-                            <option value="bolu">Bolu</option>
-                            <option value="burdur">Burdur</option>
-                            <option value="bursa">Bursa</option>
-                            <option value="canakkale">Çanakkale</option>
-                            <option value="cankiri">Çankırı</option>
-                            <option value="corum">Çorum</option>
-                            <option value="denizli">Denizli</option>
-                            <option value="diyarbakir">Diyarbakır</option>
-                            <option value="duzce">Düzce</option>
-                            <option value="edirne">Edirne</option>
-                            <option value="elazig">Elazığ</option>
-                            <option value="erzincan">Erzincan</option>
-                            <option value="erzurum">Erzurum</option>
-                            <option value="eskisehir">Eskişehir</option>
-                            <option value="gaziantep">Gaziantep</option>
-                            <option value="giresun">Giresun</option>
-                            <option value="gumushane">Gümüşhane</option>
-                            <option value="hakkari">Hakkâri</option>
-                            <option value="hatay">Hatay</option>
-                            <option value="igdir">Iğdır</option>
-                            <option value="isparta">Isparta</option>
-                            <option value="istanbul">İstanbul</option>
-                            <option value="izmir">İzmir</option>
-                            <option value="kars">Kars</option>
-                            <option value="kastamonu">Kastamonu</option>
-                            <option value="kayseri">Kayseri</option>
-                            <option value="kilis">Kilis</option>
-                            <option value="kirikkale">Kırıkkale</option>
-                            <option value="kirklareli">Kırklareli</option>
-                            <option value="kirsehir">Kırşehir</option>
-                            <option value="kocaeli">Kocaeli</option>
-                            <option value="konya">Konya</option>
-                            <option value="kutahya">Kütahya</option>
-                            <option value="malatya">Malatya</option>
-                            <option value="manisa">Manisa</option>
-                            <option value="mardin">Mardin</option>
-                            <option value="mersin">Mersin</option>
-                            <option value="mugla">Muğla</option>
-                            <option value="mus">Muş</option>
-                            <option value="nevsehir">Nevşehir</option>
-                            <option value="nigde">Niğde</option>
-                            <option value="ordu">Ordu</option>
-                            <option value="osmaniye">Osmaniye</option>
-                            <option value="rize">Rize</option>
-                            <option value="sakarya">Sakarya</option>
-                            <option value="samsun">Samsun</option>
-                            <option value="siirt">Siirt</option>
-                            <option value="sinop">Sinop</option>
-                            <option value="sivas">Sivas</option>
-                            <option value="sanliurfa">Şanlıurfa</option>
-                            <option value="sirnak">Şırnak</option>
-                            <option value="tekirdag">Tekirdağ</option>
-                            <option value="tokat">Tokat</option>
-                            <option value="trabzon">Trabzon</option>
-                            <option value="tunceli">Tunceli</option>
-                            <option value="usak">Uşak</option>
-                            <option value="van">Van</option>
-                            <option value="yalova">Yalova</option>
-                            <option value="yozgat">Yozgat</option>
-                            <option value="zonguldak">Zonguldak</option>
-                            <option value="foreigncountry">Foreign Country</option>
+                        <label for="jobLocationOption">Job Location</label>
+                        <select id="jobLocationOption" class="form-select mt-2" required>
+                            <option value="">Open this select menu</option>
+                            @foreach (var kvp in BitirmeProj.Utilities.JobApplicationOptions.JobLocationOptions)
+                            {
+                                <option value="@kvp.Key">@kvp.Value</option>
+                            }
                         </select>
                     </div>
 
-                
+                    <div class="form-group">
+                        <label for="jobtype">Job Type</label>
+                        <select id="jobtype" class="form-select" required>
+                            <option value="">Open this select menu</option>
+                            @foreach (var kvp in BitirmeProj.Utilities.JobApplicationOptions.JobTypeOptions)
+                            {
+                                <option value="@kvp.Key">@kvp.Value</option>
+                            }
+                        </select>
+                    </div>
+
+               
 
                     <div class="form-group">
                         <label for="workPlaceType">Work Place Type</label>
-
-                        <select id="workPlaceType" class="form-select" aria-label="Default select example">
-
-                            <option value="1">Hybrid</option>
-                            <option value="2">Onsite</option>
-                            <option value="3">Online</option>
+                        <select id="workPlaceType" class="form-select" required>
+                            <option value="">Open this select menu</option>
+                            @foreach (var kvp in BitirmeProj.Utilities.JobApplicationOptions.WorkPlaceTypeOptions)
+                            {
+                                <option value="@kvp.Key">@kvp.Value</option>
+                            }
                         </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="jobType">Job Type</label>
-                     
-                        <select id="jobType"  class="form-select" aria-label="Default select example">
-                        
-                            <option value="1">Full Time</option>
-                            <option value="2">Part Time</option>
-                            <option value="3">Intern</option>
-                        </select>
-
                     </div>
 
                     <div class="form-group">
                         <label for="experienceLevel">Experience Level</label>
-                        <select id="experienceLevel" class="form-select" aria-label="Default select example">
-                            <option value="1">Internship</option>
-                            <option value="2">Beginner</option>
-                            <option value="3">Expert</option>
-                            <option value="4">Mid-Expert Manager</option>
-                            <option value="5">Director</option>
-                            <option value="6">Expert Manager</option>
-                            <option value="7">Research Assistant</option>
-                            <option value="7">Teaching Staff</option>
-
+                        <select id="experienceLevel" class="form-select" required>
+                            <option value="">Open this select menu</option>
+                            @foreach (var kvp in BitirmeProj.Utilities.JobApplicationOptions.ExperienceLevelOptions)
+                            {
+                                <option value="@kvp.Key">@kvp.Value</option>
+                            }
                         </select>
-                        </div>
+                    </div>
+
 
                     <div class="form-group">
                         <label for="salary">Salary</label>
                         <input type="number" class="form-control" id="salary" name="Salary" required>
                     </div>
 
+
                     <div class="form-group">
                         <label for="salaryCurrency">Salary Currency</label>
-
-                        <select id="salaryCurrency" class="form-select" aria-label="Default select example">
-
-                            <option value="1">TL</option>
-                            <option value="2">Euro</option>
-                            <option value="3">Dolar</option>
-                            <option value="4">Pound</option>
+                        <select id="salaryCurrency" class="form-select" required>
+                            <option value="">Open this select menu</option>
+                            @foreach (var kvp in BitirmeProj.Utilities.JobApplicationOptions.SalaryCurrencyOptions)
+                            {
+                                <option value="@kvp.Key">@kvp.Value</option>
+                            }
                         </select>
                     </div>
-
                     <button type="submit" class="btn btn-primary">Post Job</button>
                 </form>
             </div>
         </div>
     </div>
 </div>
+<!--
+<div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="successModalLabel">Success</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <p>@TempData["SuccessMessage"]</p>
+                }
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 
+@* Script to show the modal automatically when there's a success message in TempData *@
+<script>
+    $(document).ready(function () {
+    @if (TempData["SuccessMessage"] != null)
+    {
+    // Show the success modal
+    $('#successModal').modal('show');
+    }
+        });
+</script>
+
+
+<script>
+    $(function () {
+        $('#postJobForm').submit(function (e) {
+            e.preventDefault();
+            $.ajax({
+                url: $(this).attr('action'),
+                type: 'POST',
+                data: $(this).serialize(),
+                success: function (response) {
+                    if (response.success) {
+                        // Show success message in a pop-up
+                        alert(response.message);
+                    } else {
+                        // Show error message in a pop-up
+                        alert(response.message);
+                    }
+                },
+                error: function () {
+                    // Show error message in a pop-up
+                    alert('An error occurred while processing your request. Please try again later.');
+                }
+            });
+        });
+    });
+</script>
+
+-->
 <table class="table">
     <thead>
         <tr>
@@ -247,3 +235,4 @@
 </table>
 
 
+-->

@@ -29,6 +29,7 @@ namespace BitirmeProj.Controllers
             return View();
         }
 
+
         // POST: Jobs/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -85,8 +86,8 @@ namespace BitirmeProj.Controllers
                     break;
             }
 
-
-            return View(await jobs.AsNoTracking().ToListAsync());
+           // System.Diagnostics.Debug.WriteLine(jobs.AsNoTracking().ToListAsync());
+            return View( await jobs.AsNoTracking().ToListAsync());
            
             }
 
