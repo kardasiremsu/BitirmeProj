@@ -55,5 +55,32 @@ namespace BitirmeProj.Controllers
             // If login fails, return to the login page with an error message
             return View(model);
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Register(RegisterViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                // Create a new user object and save it to the database
+                var newUser = new User
+                {
+                    UserName = model.UserName,
+                    Email = model.Email,
+                    // Hash the password before saving it to the database
+                    Password = model.Password
+                };
+
+                _context.Users.Add(newUser);
+                _context.SaveChanges();
+
+                // Redirect the user to the login page after successful registration
+                return RedirectToAction("Login");
+            }
+
+            // If the model state is not valid, return the registration view with validation errors
+            return View(model);
+        }
+
     }
 }

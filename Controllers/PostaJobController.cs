@@ -10,7 +10,6 @@ using BitirmeProj.Models;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
-using Fluent.Infrastructure.FluentModel;
 
 namespace BitirmeProj.Controllers
 {

@@ -4,8 +4,118 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Users</h1>
 
+    
+    <style>
+        /* Add custom CSS styles here */
+        .profile-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .profile-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+    }
+
+        .profile-photo {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            margin-right: 20px;
+        }
+
+        .profile-details {
+            font-size: 18px;
+        background-color: #EFE9E9;
+        padding: 10px;
+        border-radius: 5%;
+    }
+
+        .applications,
+        .job-listings {
+            display: flex;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .application,
+        .job-listing {
+            width: calc(50% - 10px);
+            margin-right: 20px;
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        
+        .user-info-lists{
+        background-color: #EFE9E9;
+        margin-top: 15px;
+        border-radius: 5%;
+    }
+    </style>
+
+
+
+<div class="container profile-container">
+    <div class="row">
+        <div class="col-md-4">
+            <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" alt="Profile Photo" class="profile-photo">
+
+        </div>
+        <div class="col-md-8">
+            <h2>Profile</h2>
+
+            <div class="profile-details">
+            <p><strong>Username:</strong> model.Username</p>
+            <p><strong>Email:</strong> model.Email</p>
+            <p><strong>First Name:</strong> model.FirstName</p>
+            <p><strong>Last Name:</strong> model.LastName</p>
+            <p><strong>Gender:</strong> (model.Gender == 0 ? "Female" : "Male")</p>
+            <p><strong>Title:</strong> model.Title</p>
+            <p><strong>Phone:</strong> model.Phone</p>
+            <p><strong>Address:</strong> model.Address</p>
+            </div>
+        
+
+        <div class="user-info-lists border p-3">
+            <p><strong>CVs:</strong> model.CVs</p>
+                <p><strong>Job Application:</strong> SQL will be inserted</p>
+                <p><strong>Jobs:</strong> SQL will be inserted</p>
+
+        </div>
+        </div>
+
+    </div>
+    </div>
+<!--
+    <h2>Applications</h2>
+    <div class="applications">
+        foreach (var application in Model.Applications)
+        {
+            <div class="application">
+                <h3>application.JobTitle</h3>
+                <p>Status: application.Status</p>
+            </div>
+        }
+    </div>
+
+    <h2>Job Listings</h2>
+    <div class="job-listings">
+        foreach (var jobListing in Model.JobListings)
+        {
+            <div class="job-listing">
+                <h3>jobListing.Title</h3>
+                <p>Location: jobListing.Location</p>
+            </div>
+        }
+    </div>
+    -->
+
+
+<!--
 <p>
     <a asp-action="Create">Create New</a>
 </p>
@@ -13,47 +123,48 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Password)
+                Html.DisplayNameFor(model => model.Password)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.FirstName)
+                Html.DisplayNameFor(model => model.FirstName)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.LastName)
+                Html.DisplayNameFor(model => model.LastName)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Email)
+                Html.DisplayNameFor(model => model.Email)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Phone)
+                Html.DisplayNameFor(model => model.Phone)
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Password)
+                Html.DisplayFor(modelItem => item.Password)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.FirstName)
+                Html.DisplayFor(modelItem => item.FirstName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.LastName)
+                Html.DisplayFor(modelItem => item.LastName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Email)
+                Html.DisplayFor(modelItem => item.Email)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Phone)
+                Html.DisplayFor(modelItem => item.Phone)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.UserID">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.UserID">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.UserID">Delete</a>
+                <a asp-action="Edit" asp-route-id="item.UserID">Edit</a> |
+                    <a asp-action="Details" asp-route-id="item.UserID">Details</a> |
+                    <a asp-action="Delete" asp-route-id="item.UserID">Delete</a>
             </td>
         </tr>
 }
     </tbody>
 </table>
+-->
