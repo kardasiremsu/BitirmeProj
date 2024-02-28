@@ -18,8 +18,6 @@ namespace BitirmeProj.Models
         public string JobLocation { get; set; }
         public int WorkPlaceType { get; set; }
         public int JobType { get; set; }
-        public string JobTypeText => JobApplicationOptions.JobTypeOptions.ContainsKey(JobType) ? (JobApplicationOptions.JobTypeOptions[JobType] ): "Unknown";
-
         public int ExperienceLevel { get; set; }
         public int Salary { get; set; }
         public int SalaryCurrency { get; set; }

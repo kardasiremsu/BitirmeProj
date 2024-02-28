@@ -67,13 +67,18 @@ namespace BitirmeProj.Controllers
             System.Diagnostics.Debug.WriteLine(model.WorkPlaceType);
             System.Diagnostics.Debug.WriteLine(model.JobTitle);
             System.Diagnostics.Debug.WriteLine(model.JobType);
+            System.Diagnostics.Debug.WriteLine("!!!!!!");
+            System.Diagnostics.Debug.WriteLine(model.JobLocation);
+            System.Diagnostics.Debug.WriteLine("Job TYPE");
+            System.Diagnostics.Debug.WriteLine(model.JobType);
+
             try
             {
                 JobListing job = new JobListing();
                 // job.JobID = 1;
                 job.JobTitle = model.JobTitle;
                 job.JobDescription = model.JobDescription;
-                job.JobLocation = "test";
+                job.JobLocation = model.JobLocation;
                 job.JobType = model.JobType;
                 job.ApplicationDeadline = model.ApplicationDeadline;
                 job.WorkPlaceType = model.WorkPlaceType;
