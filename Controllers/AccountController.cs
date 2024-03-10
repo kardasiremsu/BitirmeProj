@@ -1,86 +1,91 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Linq;
+using BitirmeProj.Data;
+using BitirmeProj.Models;
+using BitirmeProj.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using BitirmeProj.Data;
-using BitirmeProj.Models;
 
 namespace BitirmeProj.Controllers
 {
     public class AccountController : Controller
     {
-
         private readonly ApplicationDBContext _context;
-
-        public AccountController(ApplicationDBContext context)
+        private readonly IUserSessionService _userSessionService;
+        public AccountController(ApplicationDBContext context, IUserSessionService userSessionService)
         {
             _context = context;
+            _userSessionService = userSessionService; // Inject the user session service
         }
 
-
-        // GET: Jobs
-        public async Task<IActionResult> Index()
+        // GET: Account/Login
+        public IActionResult Login()
         {
-            return _context.Users != null ?
-                       View(await _context.Users.ToListAsync()) :
-                       Problem("Entity set 'ApplicationDBContext.Jobs'  is null.");
+            return View();
         }
-
-
-      
 
         // POST: Account/Login
         [HttpPost]
-        public ActionResult Login(User model)
+        [ValidateAntiForgeryToken]
+        public IActionResult Login(LoginViewModel model)
         {
             if (ModelState.IsValid)
             {
-               
-                bool isAuthenticated = true;
-
-                if (isAuthenticated)
+                var user = _context.Users.FirstOrDefault(u => u.Email == model.Email && u.Password == model.Password);
+                if (user != null)
                 {
-                    // Redirect authenticated user to a dashboard or desired page
-                    return RedirectToAction("Index", "Home"); // Change "Index" and "Home" to your desired page
+                    _userSessionService.SetCurrentUser(user);
+                    User currentUser = _userSessionService.GetCurrentUser();
+                    System.Diagnostics.Debug.WriteLine("Current Uuser!!");
+                    System.Diagnostics.Debug.WriteLine(currentUser.UserID);
+                    // Log in successful, redirect to dashboard or home page
+                    return RedirectToAction("Index", "Home");
                 }
                 else
                 {
-                    ModelState.AddModelError("", "Invalid username or password");
+                    ModelState.AddModelError("", "Invalid email or password");
                 }
             }
-
-            // If login fails, return to the login page with an error message
             return View(model);
+        }
+        [HttpGet]
+        public IActionResult Register()
+        {
+            return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Register(RegisterViewModel model)
+        public async Task<IActionResult> Register(RegisterViewModel model)
         {
-            if (ModelState.IsValid)
+            try
             {
-                // Create a new user object and save it to the database
-                var newUser = new User
-                {
-                    UserName = model.UserName,
-                    Email = model.Email,
-                    // Hash the password before saving it to the database
-                    Password = model.Password
-                };
-
-                _context.Users.Add(newUser);
+                User user = new User();
+                user.UserName = model.UserName;
+                user.Email = model.Email;
+                user.Password = model.Password;
+                user.UserType = model.UserType;
+                user.FirstName = model.FirstName;
+                user.LastName = model.LastName;
+                user.Gender = model.Gender;
+                user.Title = model.Title;
+                user.Phone = model.Phone;
+                user.Address = model.Address;
+                _context.Users.Add(user);
                 _context.SaveChanges();
+                TempData["SuccessMessage"] = "User is created successfully";
 
-                // Redirect the user to the login page after successful registration
                 return RedirectToAction("Login");
+
+
+
+            }
+            catch (Exception ex)
+            {
+
+                return Problem(ex.InnerException.Message);
             }
 
-            // If the model state is not valid, return the registration view with validation errors
-            return View(model);
         }
-
     }
 }

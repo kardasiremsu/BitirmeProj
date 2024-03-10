@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BitirmeProj.Services;
 
 
 namespace BitirmeProj.Controllers
@@ -18,10 +19,12 @@ namespace BitirmeProj.Controllers
     //    private readonly ILogger<HomeController> _logger;
 
         private readonly ApplicationDBContext _context;
+        private readonly IUserSessionService _userSessionService;
 
-        public HomeController(ApplicationDBContext context)
+        public HomeController(ApplicationDBContext context,IUserSessionService userSessionService)
         {
             _context = context;
+            _userSessionService = userSessionService;
         }
         public IActionResult PostJob()
         {
@@ -51,7 +54,8 @@ namespace BitirmeProj.Controllers
         public async Task<IActionResult> Index(string sortOrder, string titleString, string locationString)
         {
             var jobs = from j in _context.JobListings select j;
-
+            //User currentUser = _userSessionService.GetCurrentUser();
+            //System.Diagnostics.Debug.WriteLine(currentUser.UserName);
             ViewData["TitleSortParam"] = String.IsNullOrEmpty(sortOrder) ? "titleDesc" : "";
             ViewData["DateSortParam"] = sortOrder == "date" ? "dataDesc" : "date";
 

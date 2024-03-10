@@ -16,7 +16,6 @@
 
 
 
-
 <div  id="jobPostingModal" tabindex="-1" aria-labelledby="jobPostingModalLabel" >
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -112,70 +111,16 @@
             </div>
         </div>
     </div>
-</div>
 
+    </div>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-@Html.DisplayNameFor(model => model.JobTitle)
-            </th>
-            <th>
-@Html.DisplayNameFor(model => model.JobType)
-            </th>
-            <th>
-@Html.DisplayNameFor(model => model.JobLocation)
-            </th>
-            <th>
-@Html.DisplayNameFor(model => model.JobDescription)
-            </th>
-            <th>
-@Html.DisplayNameFor(model => model.Salary)
-            </th>
-            <th>
-@Html.DisplayNameFor(model => model.IsActive)
-            </th>
-            <th>
-@Html.DisplayNameFor(model => model.JobCreatedDate)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model)
-{
-                <tr>
-                    <td>
-            @Html.DisplayFor(modelItem => item.JobTitle)
-                    </td>
-                    <td>
-            @Html.DisplayFor(modelItem => item.JobType)
-                    </td>
-                    <td>
-            @Html.DisplayFor(modelItem => item.JobLocation)
-                    </td>
-                    <td>
-            @Html.DisplayFor(modelItem => item.JobDescription)
-                    </td>
-                    <td>
-            @Html.DisplayFor(modelItem => item.Salary)
-                    </td>
-                    <td>
-            @Html.DisplayFor(modelItem => item.IsActive)
-                    </td>
-                    <td>
-            @Html.DisplayFor(modelItem => item.JobCreatedDate)
-                    </td>
-                    <td>
-                        <a asp-action="Edit" asp-route-id="@item.JobID">Edit</a> |
-                        <a asp-action="Details" asp-route-id="@item.JobID">Details</a> |
-                        <a asp-action="Delete" asp-route-id="@item.JobID">Delete</a>
-                    </td>
-                </tr>
+  
+@{
+    var message = TempData["SuccessMessage"] ?? string.Empty;
 }
-    </tbody>
-</table>
 
-
--->
+<script type="text/javascript">
+    var message = '@message';
+    if (message)
+        alert(message);
+</script>

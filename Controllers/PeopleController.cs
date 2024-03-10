@@ -7,22 +7,24 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BitirmeProj.Data;
 using BitirmeProj.Models;
-
+using BitirmeProj.Services;
 namespace BitirmeProj.Controllers
 {
     public class PeopleController : Controller
     {
         private readonly ApplicationDBContext _context;
-
-        public PeopleController(ApplicationDBContext context)
+        private readonly IUserSessionService _userSessionService;
+        public PeopleController(ApplicationDBContext context, IUserSessionService userSessionService)
         {
             _context = context;
+            _userSessionService = userSessionService; // Inject the user session service
         }
 
         // GET: People
         public IActionResult Index(int userId)
         {
-            userId = 1;
+            User currentUser = _userSessionService.GetCurrentUser();
+            userId =(int) currentUser.UserID;
             // Retrieve the user information from the database based on the userId
             var user = _context.Users.FirstOrDefault(u => u.UserID == userId);
 
@@ -37,7 +39,8 @@ namespace BitirmeProj.Controllers
         // GET: People/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            id = 1;
+            User currentUser = _userSessionService.GetCurrentUser();
+            id = currentUser.UserID;
             if (id == null || _context.Users == null)
             {
                 return NotFound();
@@ -130,7 +133,8 @@ namespace BitirmeProj.Controllers
         public IActionResult Edit(int ?userId)
         {
 
-            userId = 1;
+            User currentUser = _userSessionService.GetCurrentUser();
+            userId = currentUser.UserID;
             // Retrieve the user information from the database based on the userId
             var user = _context.Users.FirstOrDefault(u => u.UserID == userId);
 
