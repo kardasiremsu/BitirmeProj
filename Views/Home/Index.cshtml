@@ -1,4 +1,5 @@
 ﻿@using BitirmeProj.Data
+@using BitirmeProj.Data
 @using BitirmeProj.Utilities
 @model IEnumerable<BitirmeProj.Models.JobListing>
 @inject ApplicationDBContext _context // Inject ApplicationDBContext into the view
@@ -6,60 +7,194 @@
 @{
     ViewData["Title"] = "Home Page";
 }
-<link rel="stylesheet" href="~/css/home.css" asp-append-version="true" />
-<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-<!-- Bootstrap CSS -->
 
-<style>
-    .job-listings {
-        background-color: darkgray; /* Gray background */
-        padding: 20px;
-    }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="~/css/home.css" asp-append-version="true" />
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .filter-section {
+            background-color: #f2f2f2;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
 
-    .job-card {
-        background-color: #ffffff; /* White background */
-        margin-bottom: 20px;
-        border-radius: 5px;
-        padding: 20px;
-    }
-    
-    
-</style>
+            .filter-section label {
+                display: block;
+                margin-bottom: 5px;
+            }
 
-<main class="centered-content">
+        .order-section {
+            margin-bottom: 20px;
+        }
 
-    <h3>Research Job</h3>
-    <section class="job-filters">
-
-        <form asp-action="Index" method="get">
-            <div class="form-action no-color">
-                <p class="input-group-text">
-                    <input placeholder="Title/Description "type="text" class = "input-group" name="titleString" value="@ViewData["TitleFilter"]"/>
-                    <input placeholder="Location" type="text" class="input-group" name="locationString" value="@ViewData["LocationFilter"]" />
-                    <input type="submit" value="Search" class="btn btn-secondary"/>
-                    <a class= "btn btn-outline-secondary" asp-action="Index">Back to Full List </a>
-                </p>
+            .order-section button {
+                margin-right: 10px;
+            }
+    </style>
+</head>
+<body>
+    <main class="centered-content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="order-section">
+                        <h3 class="text-center mb-4">Research Job</h3>
+                        <section class="job-order text-center">
+                            <a class="btn btn-outline-primary" asp-action="Index" asp-route-sortOrder="@ViewData["TitleSortParam"]">
+                                Order By Title
+                            </a>
+                            <a class="btn btn-outline-primary" asp-action="Index" asp-route-sortOrder="@ViewData["DateSortParam"]">
+                                Order By Date
+                            </a>
+                        </section>
+                    </div>
+                </div>
             </div>
-        </form>
-    </section>
-    
+            <div class="row">
+                <div class="col-md-3">
+                    <section class="filter-section">
+                        <h4>Filter Jobs</h4>
+                        <form asp-action="Index" method="get">
+                            <div class="form-group">
+                                <label for="experienceLevel">Experience Level</label>
+                                <select id="experienceLevel" class="form-select" name="ExperienceLevel" required>
+                                    <option value="">Open this select menu</option>
 
+                                    @foreach (var kvp in BitirmeProj.Utilities.JobApplicationOptions.ExperienceLevelOptions)
+                                    {
+                                        <option value="@kvp.Key">@kvp.Value</option>
+                                    }
+                                </select>
+                            </div>
 
-    <section class="job-order">
+                        </form>
+                    </section>
+                    <section class="filter-section">
+                        <form asp-action="Index" method="get">
+                            <div class="form-group">
 
-        <a class = "btn btn-outline-primary" asp-action="Index" asp-route-sortOrder="@ViewData["TitleSortParam"]">
-            Order By Title
-        </a>
-        <a class = "btn btn-outline-primary"  asp-action="Index" asp-route-sortOrder="@ViewData["DateSortParam"]">
-            Order By Date
-        </a>
+                                    <label for="jobLocationOption">Job Location</label>
+                                    <select id="jobLocationOption" class="form-select mt-2" name="JobLocation" required>
+                                        <option value="">Open this select menu</option>
+                                        @foreach (var kvp in BitirmeProj.Utilities.JobApplicationOptions.JobLocationOptions)
+                                        {
+                                            <option value="@kvp.Key">@kvp.Value</option>
+                                        }
+                                    </select>
+                                </div>
+                        </form>
+                    </section>
+                    <section class="filter-section">
+                        <form asp-action="Index" method="get">
+                            <div class="form-group">
 
-    </section>
-    
-  
-    @section Scripts {
+                                <label for="jobLocationOption">Job Location</label>
+                                <select id="jobLocationOption" class="form-select mt-2" name="JobLocation" required>
+                                    <option value="">Open this select menu</option>
+                                    @foreach (var kvp in BitirmeProj.Utilities.JobApplicationOptions.JobLocationOptions)
+                                    {
+                                        <option value="@kvp.Key">@kvp.Value</option>
+                                    }
+                                </select>
+                            </div>
+                        </form>
+                    </section>
+                    <section class="filter-section">
+                        <form asp-action="Index" method="get">
+                            <div class="form-group">
+                                <label for="jobtype">Job Type</label>
+                                <select id="jobtype" class="form-select" name="JobType" required>
+                                    <option value="">Open this select menu</option>
+                                    @foreach (var kvp in BitirmeProj.Utilities.JobApplicationOptions.JobTypeOptions)
+                                    {
+                                        <option value="@kvp.Key">@kvp.Value</option>
+                                    }
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-secondary">Filter</button>
+                        </form>
+                    </section>
+                  
+                </div>
+                <div class="col-md-9">
+                    <div class="container">
+                        @foreach (var item in Model)
+                        {
+                            var postedByFullName = UserService.GetUserFullName(item.PostedBy, _context); // Assuming _context is available in your Razor view or controller
+                                <div class="col-md-10">
+                                    <div class="job-card">
+                                        <p><strong>Posted By:</strong> @postedByFullName</p>
+                                        <h2>@Html.DisplayFor(modelItem => item.JobTitle)</h2>
+                                        <p><strong>Job Location:</strong> @Html.DisplayFor(modelItem => item.JobLocation)</p>
+                                        <p><strong>Job Application Deadline:</strong> @Html.DisplayFor(modelItem => item.ApplicationDeadline)</p>
+                                        <div class="job-details">
+                                            <p><strong>Description:</strong></p>
+                                            <pre>@Html.Raw(item.JobDescription)</pre>
+                                        </div>
+                                      <!--   <a class="read-more-btn">Read More</a> --> 
+                                        <button type="button" class="btn btn-primary" onclick="viewJobDetails({
+                                        jobID: '@item.JobID',
+                                        jobTitle: '@Html.Raw(item.JobTitle)',
+                                        jobLocation: '@Html.Raw(item.JobLocation)',
+                                        jobType: '@item.JobType',
+                                        applicationDeadline: '@item.ApplicationDeadline',
+                                        experienceLevel: '@item.ExperienceLevel',
+                                        salary: '@item.Salary',
+                                        salaryCurrency: '@item.SalaryCurrency'
+                                    })">
+                                            View Job Details
+                                        </button>
+                                    </div>
+                                </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
 
+        <!-- Modal -->
+        <div class="modal fade" id="jobDetailsModal" tabindex="-1" role="dialog" aria-labelledby="jobDetailsModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="jobDetailsModalLabel">Job Details</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Job details will be inserted here -->
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" onclick="editJob()">Edit</button>
+                        <button type="button" class="btn btn-success" onclick="applyJob()">Apply</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="~/js/home.js" asp-append-version="true"></script>
         <script>
+            document.querySelectorAll('.read-more-btn').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    var details = this.parentElement.querySelector('.job-details');
+                    if (details.style.display === 'none') {
+                        details.style.display = 'block';
+                        this.textContent = 'Read Less';
+                    } else {
+                        details.style.display = 'none';
+                        this.textContent = 'Read More';
+                    }
+                });
+            });
+
             function viewJobDetails(job) {
                 console.log("log deneme");
                 var applicationDeadlineDateOnly = new Date(job.applicationDeadline).toLocaleDateString();
@@ -70,7 +205,7 @@
                     "<p><strong>Type:</strong> " + getJobTypeText(job.jobType) + "</p>" +
                     "<p><strong>Application Deadline:</strong> " + applicationDeadlineDateOnly + "</p>" +
                     "<p><strong>Experience Level:</strong> " + getExperienceLevelText(job.experienceLevel) + "</p>" +
-                    "<p><strong>Salary:</strong> " + job.salary + " " + getSalaryCurrencyText(job.salaryCurrency) + "</p>";
+                    "<p><strong>Salary:</strong> " + job.salary + " " + getSalaryCurrencyText(job.salaryCurrency) + "</p>"
 
                 // Update modal content with job details
                 $('#jobDetailsModal .modal-body').html(details);
@@ -89,7 +224,7 @@
                 console.log('Applying to job with ID ' + jobId);
             }
             function getJobTypeText(jobType) {
-                
+
                 // Replace this with your actual logic to retrieve job type text from dictionary
                 var jobTypeOptions = @Html.Raw(Json.Serialize(JobApplicationOptions.JobTypeOptions));
                 return jobTypeOptions[jobType] || jobType;
@@ -113,79 +248,6 @@
                 return jobLocationOptions[jobLocation] || jobLocation;
             }
         </script>
-    }
-
-    <!-- Modal -->
-    <div class="modal fade" id="jobDetailsModal" tabindex="-1" role="dialog" aria-labelledby="jobDetailsModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="jobDetailsModalLabel">Job Details</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <!-- Job details will be inserted here -->
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" onclick="editJob()">Edit</button>
-                    <button type="button" class="btn btn-success" onclick="applyJob()">Apply</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-    <div class="container">
-
-    
-    @foreach (var item in Model)
-    {
-            var postedByFullName = UserService.GetUserFullName(item.PostedBy, _context); // Assuming _context is available in your Razor view or controller
-
-            <div class="row justify-content-center">
-
-            <div class="col-md-10">
-
-        <div class="job-card">
-                        <p><strong>Posted By:</strong> @postedByFullName</p>
-
-            <h2>@Html.DisplayFor(modelItem => item.JobTitle)</h2>
-
-                        <div style="max-height: 15em; overflow-y: auto;  /">
-                            <p><strong>Description:</strong></p>
-                            <pre>@Html.Raw(item.JobDescription)</pre>
-                        </div>
-
-
-
-            <button type="button" class="btn btn-primary" onclick="viewJobDetails({
-           
-            jobID: '@item.JobID',
-            jobTitle: '@Html.Raw(item.JobTitle)',
-            jobLocation: '@Html.Raw(item.JobLocation)',
-            jobType: '@item.JobType',
-            applicationDeadline: '@item.ApplicationDeadline',
-            experienceLevel: '@item.ExperienceLevel',
-            salary: '@item.Salary',
-            salaryCurrency: '@item.SalaryCurrency'
-        })">
-                View Job Details
-            </button>
-            </div>
-        </div>
-            </div>
-
-
-    }
-    </div>
-
- 
-
-    <script src="~/js/home.js" asp-append-version="true"></script>
-
-</main>
-
+    </main>
+</body>
+</html>

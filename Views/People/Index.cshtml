@@ -100,11 +100,31 @@
                         <label for="UserName">Username</label>
                         <input type="text" class="form-control" id="UserName" name="UserName" value="@Model.UserName" required>
                     </div>
+                    <div class="form-group">
+                        <label for="FirstName">First Name</label>
+                        <input type="text" class="form-control" id="FirstName" name="FirstName" value="@Model.FirstName" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="LastName">Last Name</label>
+                        <input type="text" class="form-control" id="LastName" name="LastName" value="@Model.LastName" required>
+                    </div>
 
                     <div class="form-group">
                         <label for="Email">Email</label>
                         <input type="email" class="form-control" id="Email" name="Email" value="@Model.Email" required>
                     </div>
+
+
+                     <div class="form-group">
+            <label for="Gender">Gender</label>
+            <select class="form-control" id="Gender" name="Gender" required>
+                <option value="">Select Gender</option>
+                <option value="0">Female</option>
+                <option value="1">Male</option>
+                <option value="2">Other</option>
+            </select>
+        </div>
                     <!-- Add other editable fields -->
                     <button id="cancelEditBtn" type="button" class="btn btn-secondary">Cancel</button>
 

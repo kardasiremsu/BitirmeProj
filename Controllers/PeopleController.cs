@@ -78,6 +78,59 @@ namespace BitirmeProj.Controllers
             return View(User);
         }
 
+        // Inside PeopleController.cs
+
+        // GET: People/Edit
+        public IActionResult Edit()
+        {
+            User currentUser = _userSessionService.GetCurrentUser();
+            if (currentUser == null)
+            {
+                return NotFound();
+            }
+
+            var user = _context.Users.FirstOrDefault(u => u.UserID == currentUser.UserID);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return View(user);
+        }
+
+        // POST: People/Edit
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, [Bind("UserID,FirstName,LastName,Email,Phone")] User user)
+        {
+            if (id != user.UserID)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Update(user);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!UserExists(user.UserID))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(Index));
+            }
+            return View(user);
+        }
+
         /*  // GET: People/Edit/5
           public async Task<IActionResult> Edit(int? id)
           {
