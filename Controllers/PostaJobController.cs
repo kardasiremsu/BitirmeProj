@@ -44,7 +44,6 @@ namespace BitirmeProj.Controllers
 
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public ActionResult PostJob(JobListing model)
         {
             System.Diagnostics.Debug.WriteLine("!!!!!!");

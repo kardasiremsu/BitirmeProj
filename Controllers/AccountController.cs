@@ -36,7 +36,7 @@ namespace BitirmeProj.Controllers
                 {
                     _userSessionService.SetCurrentUser(user);
                     User currentUser = _userSessionService.GetCurrentUser();
-                    System.Diagnostics.Debug.WriteLine("Current Uuser!!");
+                    System.Diagnostics.Debug.WriteLine("Current User!!");
                     System.Diagnostics.Debug.WriteLine(currentUser.UserID);
                     // Log in successful, redirect to dashboard or home page
                     return RedirectToAction("Index", "Home");
