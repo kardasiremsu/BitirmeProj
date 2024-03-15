@@ -1,15 +1,28 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace BitirmeProj.Models
 {
     public class CV
     {
         [Key]
-        public int ID { get; set; }
-        public int PersonID { get; set; }
-        public string? Skills { get; set; }
+        public int CVID { get; set; }
 
-        public string? CoverLetter { get; set; }
+        public int UserID { get; set; }
+        public int CVFile { get; set; } // Replace with appropriate data type
+        public int LastUpdateDate { get; set; }
+        public int CreationDate { get; set; }
+        public string CVName { get; set; }
 
+        // Foreign key
+        [ForeignKey("UserID")]
+        public User User { get; set; }
+
+        // Navigation properties for relationships
+        public ICollection<CVSchool> CVSchools { get; set; }
+        public ICollection<CVWork> CVWorks { get; set; }
+        public ICollection<CVReference> CVReferences { get; set; }
+        public ICollection<CVLanguage> CVLanguages { get; set; }
+        public ICollection<CVSkill> CVSkills { get; set; }
     }
 }

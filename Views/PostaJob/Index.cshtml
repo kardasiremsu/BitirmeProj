@@ -1,0 +1,126 @@
+﻿@using BitirmeProj.Utilities;
+
+@model IEnumerable<BitirmeProj.Models.JobListing>
+
+@{
+    ViewData["Title"] = "Post a Job";
+}
+<!--
+<h1 style="text-align:center">Post a Job</h1>
+
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#jobPostingModal">
+    Post a Job
+</button>
+
+-->
+
+
+
+<div  id="jobPostingModal" tabindex="-1" aria-labelledby="jobPostingModalLabel" >
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="jobPostingModalLabel">Post a Job</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id= "postJobForm" asp-action="PostJob" asp-controller="PostaJob" method="post">
+                    @Html.AntiForgeryToken()
+                    <div class="form-group">
+                        <label for="jobTitle">Job Title</label>
+                        <input type="text" class="form-control" id="jobTitle" name="JobTitle" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="jobDescription">Job Description</label>
+                        <textarea class="form-control" id="jobDescription" name="JobDescription" rows="4" required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="applicationDeadline">Application Deadline</label>
+                        <input type="date" class="form-control" id="applicationDeadline" name="ApplicationDeadline" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="jobLocationOption">Job Location</label>
+                        <select id="jobLocationOption" class="form-select mt-2" name="JobLocation" required>
+                            <option value="">Open this select menu</option>
+                            @foreach (var kvp in BitirmeProj.Utilities.JobApplicationOptions.JobLocationOptions)
+                            {
+                                <option value="@kvp.Key">@kvp.Value</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="jobtype">Job Type</label>
+                        <select id="jobtype" class="form-select" name="JobType" required>
+                            <option value="">Open this select menu</option>
+                            @foreach (var kvp in BitirmeProj.Utilities.JobApplicationOptions.JobTypeOptions)
+                            {
+                                <option value="@kvp.Key">@kvp.Value</option>
+                            }
+                        </select>
+                    </div>
+
+               
+
+                    <div class="form-group">
+                        <label for="workPlaceType">Work Place Type</label>
+                        <select id="workPlaceType" class="form-select" name="WorkPlaceType" required>
+                            <option value="">Open this select menu</option>
+
+                            @foreach (var kvp in BitirmeProj.Utilities.JobApplicationOptions.WorkPlaceTypeOptions)
+                            {
+                                <option value="@kvp.Key">@kvp.Value</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="experienceLevel">Experience Level</label>
+                        <select id="experienceLevel" class="form-select" name="ExperienceLevel" required>
+                            <option value="">Open this select menu</option>
+
+                            @foreach (var kvp in BitirmeProj.Utilities.JobApplicationOptions.ExperienceLevelOptions)
+                            {
+                                <option value="@kvp.Key">@kvp.Value</option>
+                            }
+                        </select>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="salary">Salary</label>
+                        <input type="number" class="form-control" id="salary" name="Salary" required>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="salaryCurrency">Salary Currency</label>
+                        <select id="salaryCurrency" class="form-select" name="SalaryCurrency" required>
+                            <option value="">Open this select menu</option>
+
+                            @foreach (var kvp in BitirmeProj.Utilities.JobApplicationOptions.SalaryCurrencyOptions)
+                            {
+                                <option value="@kvp.Key">@kvp.Value</option>
+                            }
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Post Job</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    </div>
+
+  
+@{
+    var message = TempData["SuccessMessage"] ?? string.Empty;
+}
+
+<script type="text/javascript">
+    var message = '@message';
+    if (message)
+        alert(message);
+</script>

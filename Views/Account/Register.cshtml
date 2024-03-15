@@ -1,0 +1,106 @@
+﻿@model BitirmeProj.Models.RegisterViewModel
+
+@{
+    ViewData["Title"] = "Register";
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">Register</div>
+                <div class="card-body">
+                    @using (Html.BeginForm("Register", "Account", FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+
+                        <div class="form-group">
+                            @Html.LabelFor(Model => Model.UserName,"Username")
+                            @Html.TextBoxFor(Model => Model.UserName, new { @class = "form-control", required = "required" })
+                            @Html.ValidationMessageFor(Model => Model.UserName)
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(Model => Model.FirstName, "First Name")
+                            @Html.TextBoxFor(Model => Model.FirstName, new { @class = "form-control", required = "required" })
+                            @Html.ValidationMessageFor(Model => Model.FirstName)
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(Model => Model.LastName, "Last Name")
+                            @Html.TextBoxFor(Model => Model.LastName, new { @class = "form-control", required = "required" })
+                            @Html.ValidationMessageFor(Model => Model.LastName)
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(Model => Model.Email)
+                            @Html.TextBoxFor(Model => Model.Email, new { @class = "form-control", required = "required" })
+                            @Html.ValidationMessageFor(Model => Model.Email)
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(Model => Model.Password)
+                            @Html.PasswordFor(Model => Model.Password, new { @class = "form-control", required = "required" })
+                            @Html.ValidationMessageFor(Model => Model.Password)
+                            <small class="form-text text-muted">Password must be at least 8 characters long.</small>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(Model => Model.ConfirmPassword,"Confirm Password")
+                            @Html.PasswordFor(Model => Model.ConfirmPassword, new { @class = "form-control", required = "required" })
+                            @Html.ValidationMessageFor(Model => Model.ConfirmPassword)
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(Model => Model.UserType,"User Type")
+                            @Html.DropDownListFor(Model => Model.UserType, new SelectList(new[]
+                                     {
+                        new { Value = 0, Text = "Student" },
+                        new { Value = 1, Text = "Researcher" }
+                        }, "Value", "Text"), new { @class = "form-control", required = "required" })
+                            @Html.ValidationMessageFor(Model => Model.UserType)
+                        </div>
+
+                     
+
+                        <div class="form-group">
+                            @Html.LabelFor(Model => Model.Gender)
+                            @Html.DropDownListFor(Model => Model.Gender, new SelectList(new[]
+                                     {
+                        new { Value = 0, Text = "Female" },
+                        new { Value = 1, Text = "Male" },
+                        new { Value = 2, Text = "Other" }
+
+                        }, "Value", "Text"), new { @class = "form-control" })
+                            @Html.ValidationMessageFor(Model => Model.Gender)
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(Model => Model.Title)
+                            @Html.TextBoxFor(Model => Model.Title, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(Model => Model.Title)
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(Model => Model.Phone)
+                            @Html.TextBoxFor(Model => Model.Phone, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(Model => Model.Phone)
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(Model => Model.Address)
+                            @Html.TextBoxFor(Model => Model.Address, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(Model => Model.Address)
+                        </div>
+
+
+                        <button type="submit" class="btn btn-primary">Register</button>
+                        <div class="card-footer text-center">
+
+                        <p>Do you have an account? <a href="@Url.Action("Login", "Account")">Login here</a></p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

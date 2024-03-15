@@ -7,42 +7,53 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BitirmeProj.Data;
 using BitirmeProj.Models;
-
+using BitirmeProj.Services;
 namespace BitirmeProj.Controllers
 {
     public class PeopleController : Controller
     {
         private readonly ApplicationDBContext _context;
-
-        public PeopleController(ApplicationDBContext context)
+        private readonly IUserSessionService _userSessionService;
+        public PeopleController(ApplicationDBContext context, IUserSessionService userSessionService)
         {
             _context = context;
+            _userSessionService = userSessionService; // Inject the user session service
         }
 
         // GET: People
-        public async Task<IActionResult> Index()
+        public IActionResult Index(int userId)
         {
-              return _context.Persons != null ? 
-                          View(await _context.Persons.ToListAsync()) :
-                          Problem("Entity set 'ApplicationDBContext.Persons'  is null.");
+            User currentUser = _userSessionService.GetCurrentUser();
+            userId =(int) currentUser.UserID;
+            // Retrieve the user information from the database based on the userId
+            var user = _context.Users.FirstOrDefault(u => u.UserID == userId);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return View(user);
         }
 
         // GET: People/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.Persons == null)
+            User currentUser = _userSessionService.GetCurrentUser();
+            id = currentUser.UserID;
+            if (id == null || _context.Users == null)
             {
                 return NotFound();
             }
 
-            var person = await _context.Persons
-                .FirstOrDefaultAsync(m => m.ID == id);
-            if (person == null)
+            var User = await _context.Users
+                .FirstOrDefaultAsync(m => m.UserID == id);
+            if (User == null)
             {
                 return NotFound();
             }
 
-            return View(person);
+            return View(User);
         }
 
         // GET: People/Create
@@ -56,41 +67,43 @@ namespace BitirmeProj.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ID,Password,FirstName,LastName,Email,Phone")] Person person)
+        public async Task<IActionResult> Create([Bind("ID,Password,FirstName,LastName,Email,Phone")] User User)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(person);
+                _context.Add(User);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(person);
+            return View(User);
         }
 
-        // GET: People/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        // Inside PeopleController.cs
+
+        // GET: People/Edit
+        public IActionResult Edit()
         {
-            if (id == null || _context.Persons == null)
+            User currentUser = _userSessionService.GetCurrentUser();
+            if (currentUser == null)
             {
                 return NotFound();
             }
 
-            var person = await _context.Persons.FindAsync(id);
-            if (person == null)
+            var user = _context.Users.FirstOrDefault(u => u.UserID == currentUser.UserID);
+            if (user == null)
             {
                 return NotFound();
             }
-            return View(person);
+
+            return View(user);
         }
 
-        // POST: People/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: People/Edit
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ID,Password,FirstName,LastName,Email,Phone")] Person person)
+        public async Task<IActionResult> Edit(int id, [Bind("UserID,FirstName,LastName,Email,Phone")] User user)
         {
-            if (id != person.ID)
+            if (id != user.UserID)
             {
                 return NotFound();
             }
@@ -99,12 +112,12 @@ namespace BitirmeProj.Controllers
             {
                 try
                 {
-                    _context.Update(person);
+                    _context.Update(user);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!PersonExists(person.ID))
+                    if (!UserExists(user.UserID))
                     {
                         return NotFound();
                     }
@@ -115,25 +128,94 @@ namespace BitirmeProj.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(person);
+            return View(user);
         }
 
+        /*  // GET: People/Edit/5
+          public async Task<IActionResult> Edit(int? id)
+          {
+              if (id == null || _context.Users == null)
+              {
+                  return NotFound();
+              }
+
+              var User = await _context.Users.FindAsync(id);
+              if (User == null)
+              {
+                  return NotFound();
+              }
+              return View(User);
+          }
+
+          // POST: People/Edit/5
+          // To protect from overposting attacks, enable the specific properties you want to bind to.
+          // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+          [HttpPost]
+          [ValidateAntiForgeryToken]
+          public async Task<IActionResult> Edit(int id, [Bind("ID,Password,FirstName,LastName,Email,Phone")] User User)
+          {
+              if (id != User.UserID)
+              {
+                  return NotFound();
+              }
+
+              if (ModelState.IsValid)
+              {
+                  try
+                  {
+                      _context.Update(User);
+                      await _context.SaveChangesAsync();
+                  }
+                  catch (DbUpdateConcurrencyException)
+                  {
+                      if (!UserExists(User.UserID))
+                      {
+                          return NotFound();
+                      }
+                      else
+                      {
+                          throw;
+                      }
+                  }
+                  return RedirectToAction(nameof(Index));
+              }
+              return View(User);
+          }
+        */
+
+        public IActionResult Edit(int ?userId)
+        {
+
+            User currentUser = _userSessionService.GetCurrentUser();
+            userId = currentUser.UserID;
+            // Retrieve the user information from the database based on the userId
+            var user = _context.Users.FirstOrDefault(u => u.UserID == userId);
+
+            if (user == null)
+            {
+                // Handle the case where the user is not found
+                return NotFound();
+            }
+
+            // Pass the user object to the edit view
+            return View(user);
+        }
         // GET: People/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.Persons == null)
+            if (id == null || _context.Users == null)
             {
                 return NotFound();
             }
 
-            var person = await _context.Persons
-                .FirstOrDefaultAsync(m => m.ID == id);
-            if (person == null)
+            var User = await _context.Users
+                .FirstOrDefaultAsync(m => m.UserID == id);
+            if (User == null)
             {
                 return NotFound();
             }
 
-            return View(person);
+            return View(User);
         }
 
         // POST: People/Delete/5
@@ -141,23 +223,23 @@ namespace BitirmeProj.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Persons == null)
+            if (_context.Users == null)
             {
-                return Problem("Entity set 'ApplicationDBContext.Persons'  is null.");
+                return Problem("Entity set 'ApplicationDBContext.Users'  is null.");
             }
-            var person = await _context.Persons.FindAsync(id);
-            if (person != null)
+            var User = await _context.Users.FindAsync(id);
+            if (User != null)
             {
-                _context.Persons.Remove(person);
+                _context.Users.Remove(User);
             }
             
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool PersonExists(int id)
+        private bool UserExists(int id)
         {
-          return (_context.Persons?.Any(e => e.ID == id)).GetValueOrDefault();
+          return (_context.Users?.Any(e => e.UserID == id)).GetValueOrDefault();
         }
     }
 }

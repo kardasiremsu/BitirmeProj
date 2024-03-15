@@ -1,10 +1,10 @@
-﻿@model IEnumerable<BitirmeProj.Models.Job>
+﻿@model IEnumerable<BitirmeProj.Models.JobListing>
 
 @{
-    ViewData["Title"] = "JOB LIST";
+    ViewData["Title"] = "Job List";
 }
 
-<h1>JOB LIST</h1>
+<h1>Job List</h1>
 
 <p>
     <a asp-action="Create">Create New</a>
@@ -13,7 +13,7 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Title)
+                @Html.DisplayNameFor(model => model.JobTitle)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.JobType)
@@ -22,25 +22,16 @@
                 @Html.DisplayNameFor(model => model.JobLocation)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Description)
+                @Html.DisplayNameFor(model => model.JobDescription)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Salary)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Skills)
+                @Html.DisplayNameFor(model => model.IsActive)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Questions)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Active)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Applications)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Date)
+                @Html.DisplayNameFor(model => model.JobCreatedDate)
             </th>
             <th></th>
         </tr>
@@ -49,7 +40,7 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Title)
+                @Html.DisplayFor(modelItem => item.JobTitle)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.JobType)
@@ -58,31 +49,21 @@
                 @Html.DisplayFor(modelItem => item.JobLocation)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Description)
+                @Html.DisplayFor(modelItem => item.JobDescription)
             </td>
             <td>
                @Html.DisplayFor(modelItem => item.Salary)
             </td>
-
             <td>
-                @Html.DisplayFor(modelItem => item.Skills)
+                @Html.DisplayFor(modelItem => item.IsActive)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Questions)
+                @Html.DisplayFor(modelItem => item.JobCreatedDate)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Active)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Applications.ID)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Date)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.ID">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
+                <a asp-action="Edit" asp-route-id="@item.JobID">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.JobID">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.JobID">Delete</a>
             </td>
         </tr>
 }

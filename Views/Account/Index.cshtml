@@ -1,0 +1,45 @@
+﻿@model BitirmeProj.Models.User
+
+@{
+    ViewBag.Title = "Login";
+}
+
+<h2>Login or Register</h2>
+
+@if (ViewBag.ShowRegisterForm)
+{
+    <h3>Register</h3>
+    @Html.Partial("_Register", new BitirmeProj.Models.RegisterViewModel())
+}
+else
+{
+    <h3>Login</h3>
+    @using (Html.BeginForm("Login", "Account", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+
+        <div>
+            @Html.LabelFor(model => model.Email)
+            @Html.TextBoxFor(model => model.Email, new { @class = "form-control", required = "required" })
+            @Html.ValidationMessageFor(model => model.Email)
+        </div>
+
+        <div>
+            @Html.LabelFor(model => model.Password)
+            @Html.PasswordFor(model => model.Password, new { @class = "form-control", required = "required" })
+            @Html.ValidationMessageFor(model => model.Password)
+        </div>
+
+        <button type="submit" class="btn btn-primary">Login</button>
+    }
+}
+
+<button onclick="toggleForm()">Switch to @((ViewBag.ShowRegisterForm ? "Login" : "Register"))</button>
+
+<script>
+    function toggleForm() {
+        ViewBag.ShowRegisterForm = !ViewBag.ShowRegisterForm;
+    }
+</script>
+
+

@@ -1,0 +1,71 @@
+﻿@model IEnumerable<BitirmeProj.Models.Application>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.ApplicationDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Status)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ApplicationNote)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CoverLetter)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.User)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.JobListing)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CV)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.ApplicationDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Status)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ApplicationNote)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CoverLetter)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.User.UserID)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.JobListing.JobID)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CV.CVID)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.ApplicationID">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.ApplicationID">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.ApplicationID">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
