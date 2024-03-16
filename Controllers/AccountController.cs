@@ -2,6 +2,7 @@
 using BitirmeProj.Data;
 using BitirmeProj.Models;
 using BitirmeProj.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,12 @@ namespace BitirmeProj.Controllers
 {
     public class AccountController : Controller
     {
+        private bool VerifyPassword(string hashedPassword, string providedPassword)
+        {
+            var passwordHasher = new PasswordHasher<User>();
+            var result = passwordHasher.VerifyHashedPassword(null, hashedPassword, providedPassword);
+            return result == PasswordVerificationResult.Success;
+        }
         private readonly ApplicationDBContext _context;
         private readonly IUserSessionService _userSessionService;
         public AccountController(ApplicationDBContext context, IUserSessionService userSessionService)
@@ -31,8 +38,10 @@ namespace BitirmeProj.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = _context.Users.FirstOrDefault(u => u.Email == model.Email && u.Password == model.Password);
-                if (user != null)
+                var user = _context.Users.FirstOrDefault(u => u.Email == model.Email);
+
+                // Kullanıcı varsa ve parola doğrulanıyorsa
+                if (user != null && VerifyPassword(user.Password, model.Password))
                 {
                     _userSessionService.SetCurrentUser(user);
                     User currentUser = _userSessionService.GetCurrentUser();
@@ -58,12 +67,16 @@ namespace BitirmeProj.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
+           
+
             try
             {
                 User user = new User();
                 user.UserName = model.UserName;
                 user.Email = model.Email;
-                user.Password = model.Password;
+                var passwordHasher = new PasswordHasher<User>();
+                string hashedPassword = passwordHasher.HashPassword(null, model.Password);
+                user.Password = hashedPassword;
                 user.UserType = model.UserType;
                 user.FirstName = model.FirstName;
                 user.LastName = model.LastName;
@@ -87,5 +100,6 @@ namespace BitirmeProj.Controllers
             }
 
         }
+
     }
 }
