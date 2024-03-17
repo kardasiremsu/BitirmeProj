@@ -24,7 +24,8 @@ namespace BitirmeProj.Controllers
         public IActionResult Index(int userId)
         {
             User currentUser = _userSessionService.GetCurrentUser();
-            userId =(int) currentUser.UserID;
+            userId = (int)currentUser.UserID;
+
             // Retrieve the user information from the database based on the userId
             var user = _context.Users.FirstOrDefault(u => u.UserID == userId);
 
@@ -32,6 +33,24 @@ namespace BitirmeProj.Controllers
             {
                 return NotFound();
             }
+
+            // Retrieve job application IDs for the user using SQL query
+            var jobApplicationIds = _context.Applications
+                .Where(a => a.UserID == userId)
+                .Select(a => a.ApplicationID)
+                .ToList();
+            var userJobs = _context.JobListings
+        .Where(j => j.PostedBy == userId)
+        .ToList();
+           
+            // Pass job application IDs and job listings to the view using ViewBag
+            ViewBag.JobApplicationIds = jobApplicationIds;
+         
+
+            // Pass job application IDs and user jobs to the view using ViewBag
+            ViewBag.UserJobs = userJobs;
+            // Pass job application IDs to the view using ViewBag
+
 
             return View(user);
         }

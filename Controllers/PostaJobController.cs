@@ -47,14 +47,6 @@ namespace BitirmeProj.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult PostJob(JobListing model)
         {
-            System.Diagnostics.Debug.WriteLine("!!!!!!");
-            System.Diagnostics.Debug.WriteLine(model.WorkPlaceType);
-            System.Diagnostics.Debug.WriteLine(model.JobTitle);
-            System.Diagnostics.Debug.WriteLine(model.JobType);
-            System.Diagnostics.Debug.WriteLine("!!!!!!");
-            System.Diagnostics.Debug.WriteLine(model.JobLocation);
-            System.Diagnostics.Debug.WriteLine("Job TYPE");
-            System.Diagnostics.Debug.WriteLine(model.JobType);
 
             try
             {

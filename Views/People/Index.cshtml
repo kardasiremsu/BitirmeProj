@@ -1,7 +1,7 @@
 ﻿@model BitirmeProj.Models.User
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Profile";
 }
 
 
@@ -84,11 +84,58 @@
         
 
         <div class="user-info-lists border p-3">
-            <p><strong>CVs:</strong> model.CVs</p>
-                <p><strong>Job Application:</strong> SQL will be inserted</p>
-                <p><strong>Jobs:</strong> SQL will be inserted</p>
+     <form asp-action="UploadCV" method="post" enctype="multipart/form-data">
+    <div class="form-group">
+        <label for="file">Upload PDF:</label>
+        <input type="file" id="file" name="file" accept=".pdf">
+    </div>
+    <button type="submit" class="btn btn-primary">Upload</button>
+</form>
+                <p><strong>Job Application:</strong></p>
 
-        
+                  
+                    @if (ViewBag.JobApplicationIds != null && ViewBag.JobApplicationIds.Count > 0)
+                    {
+                        <div class="row">
+                            @foreach (var jobId in ViewBag.JobApplicationIds)
+                            {
+                                <div class="col-md-4 mb-4">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Job Application ID: @jobId</h5>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p>No job applications found for this user.</p>
+                    }
+                <p><strong>Job Posted by the User:</strong> </p>
+           
+                    @if (ViewBag.UserJobs != null && ViewBag.UserJobs.Count > 0)
+                    {
+                        <div class="row">
+                            @foreach (var job in ViewBag.UserJobs)
+                            {
+                                <div class="col-md-4 mb-4">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5 class="card-title">@job.JobTitle</h5>
+                                            <!-- Display other job details as needed -->
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p>No jobs posted by this user.</p>
+                    }
+                  
             </div>
             </div>
             <div id="editProfileForm" style="display: none;">
