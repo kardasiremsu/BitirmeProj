@@ -20,7 +20,10 @@ namespace BitirmeProj.Models
         public string Address { get; set; }
        
         public ICollection<CV> CVs { get; set; }
-        
-    
-}
+        public User()
+        {
+            CVs = new List<CV>();
+        }
+
+    }
 }

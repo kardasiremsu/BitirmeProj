@@ -9,7 +9,7 @@ namespace BitirmeProj.Models
         public int CVID { get; set; }
 
         public int UserID { get; set; }
-        public int CVFile { get; set; } // Replace with appropriate data type
+        public byte[]? CVFile { get; set; } // Replace with appropriate data type
         public int LastUpdateDate { get; set; }
         public int CreationDate { get; set; }
         public string CVName { get; set; }
@@ -24,5 +24,13 @@ namespace BitirmeProj.Models
         public ICollection<CVReference> CVReferences { get; set; }
         public ICollection<CVLanguage> CVLanguages { get; set; }
         public ICollection<CVSkill> CVSkills { get; set; }
+        public CV()
+        {
+            CVSchools = new List<CVSchool>();
+            CVWorks = new List<CVWork>();
+            CVReferences = new List<CVReference>();
+            CVLanguages = new List<CVLanguage>();
+            CVSkills = new List<CVSkill>();
+        }
     }
 }

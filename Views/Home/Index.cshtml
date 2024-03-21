@@ -1,6 +1,8 @@
 ﻿@using BitirmeProj.Data
-@using BitirmeProj.Data
 @using BitirmeProj.Utilities
+@using System.Security.Claims
+@using BitirmeProj.Services;
+
 @model IEnumerable<BitirmeProj.Models.JobListing>
 @inject ApplicationDBContext _context // Inject ApplicationDBContext into the view
 
@@ -178,8 +180,18 @@
                         </form>
                         @foreach (var item in Model)
                         {
-                            var postedByFullName = UserService.GetUserFullName(item.PostedBy, _context); // Assuming _context is available in your Razor view or controller
 
+                            var userId = User.Identity.Name;
+                           
+                          
+                            var postedByFullName = UserService.GetUserFullName(item.PostedBy, _context); // Assuming _context is available in your Razor view or controller
+                            bool postedByCurrentUser = false;
+                            System.Diagnostics.Debug.WriteLine("currentuser");
+                            System.Diagnostics.Debug.WriteLine(postedByCurrentUser);
+                            System.Diagnostics.Debug.WriteLine("currentuser id");
+                            System.Diagnostics.Debug.WriteLine(userId);
+
+                            if (item.PostedBy == Convert.ToInt32(userId)){ postedByCurrentUser = true; }
                             <div class="job-card">
                                 <p><strong>Posted By:</strong> @postedByFullName</p>
                                 <h2>@Html.DisplayFor(modelItem => item.JobTitle)</h2>
@@ -190,7 +202,10 @@
                                     <pre class="description-limit">@Html.Raw(item.JobDescription)</pre>
                                     <p class="read-more-btn">Read More</p>
                                 </div>
-                                <button type="button" class="btn btn-primary" onclick="editJob()">Edit</button>
+                                @if (postedByCurrentUser)
+                                {
+                                    <button type="button" class="btn btn-primary" onclick="editJob(@item.JobID)">Edit</button>
+                                }
                                 <form id="applyForm" method="post" action="/Home/CreateApplication">
                                     <input type="hidden" id="jobID" name="jobID" value="">
                                 </form>

@@ -8,16 +8,27 @@ using Microsoft.EntityFrameworkCore;
 using BitirmeProj.Data;
 using BitirmeProj.Models;
 using BitirmeProj.Services;
+using Microsoft.AspNetCore.Hosting;
 namespace BitirmeProj.Controllers
 {
     public class PeopleController : Controller
     {
         private readonly ApplicationDBContext _context;
         private readonly IUserSessionService _userSessionService;
-        public PeopleController(ApplicationDBContext context, IUserSessionService userSessionService)
+        private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly IWebHostEnvironment _env;
+
+        public PeopleController(ApplicationDBContext context, IUserSessionService userSessionService, IWebHostEnvironment webHostEnvironment, IWebHostEnvironment env)
         {
             _context = context;
             _userSessionService = userSessionService; // Inject the user session service
+            _webHostEnvironment = webHostEnvironment;
+            _env = env;
+            var cvsDirectory = Path.Combine(env.WebRootPath, "cvs");
+            if (!Directory.Exists(cvsDirectory))
+            {
+                Directory.CreateDirectory(cvsDirectory);
+            }
         }
 
         // GET: People
@@ -28,7 +39,10 @@ namespace BitirmeProj.Controllers
 
             // Retrieve the user information from the database based on the userId
             var user = _context.Users.FirstOrDefault(u => u.UserID == userId);
+            var cvs = _context.CVs.Where(cv => cv.UserID == userId).ToList();
 
+            // Populate the view model with the retrieved CVs
+            
             if (user == null)
             {
                 return NotFound();
@@ -50,9 +64,9 @@ namespace BitirmeProj.Controllers
             // Pass job application IDs and user jobs to the view using ViewBag
             ViewBag.UserJobs = userJobs;
             // Pass job application IDs to the view using ViewBag
+            var viewModel = new UserProfileViewModel { User = currentUser, JobApplicationIds = jobApplicationIds, CV = cvs };
 
-
-            return View(user);
+            return View(viewModel);
         }
 
         // GET: People/Details/5
@@ -81,10 +95,80 @@ namespace BitirmeProj.Controllers
             return View();
         }
 
-        // POST: People/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+
         [HttpPost]
+        public IActionResult DeleteCV(int CVID)
+        {
+            var cv = _context.CVs.Find(CVID);
+            if (cv == null)
+            {
+                return NotFound();
+            }
+
+            _context.CVs.Remove(cv);
+            _context.SaveChanges();
+
+            return RedirectToAction("Index"); // Redirect to the index page after deletion
+        }
+   
+    [HttpPost]
+        public IActionResult UploadCV(IFormFile cvFile)
+        {
+            if (cvFile != null && cvFile.Length > 0)
+            {
+                try
+                {
+                    var currentUser = _userSessionService.GetCurrentUser(); // Assuming you have a service to get the current user
+                    var user = _context.Users.Include(u => u.CVs).FirstOrDefault(u => u.UserID == currentUser.UserID);
+
+                    // Create a new CV object
+                    var newCV = new CV
+                    {
+                        UserID = currentUser.UserID,
+                        CVName = cvFile.FileName // Set CVName to the original filename
+                    };
+
+                    // Save the CV object to the database
+                    _context.CVs.Add(newCV);
+                    _context.SaveChanges();
+                    if (user != null)
+                    {
+                        user.CVs.Add(newCV); // Add the new CV to the user's CV collection
+                        _context.SaveChanges(); // Save changes to the database
+                    }
+                    // Get the newly created CV ID
+                    var cvId = newCV.CVID;
+
+                    // Set the file path for saving
+                    var filePath = Path.Combine(_webHostEnvironment.WebRootPath, "cvs", $"{cvId}_{cvFile.FileName}");
+
+
+                    // Save the CV file to the server
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    {
+                        cvFile.CopyTo(fileStream);
+                    }
+                    System.Diagnostics.Debug.WriteLine($" uploading CV is successfull");
+                    // Redirect to the profile page or any other appropriate page
+                    return RedirectToAction("Index");
+                }
+                catch (Exception ex)
+                {
+                    // Handle exceptions (e.g., file save failure)
+                    System.Diagnostics.Debug.WriteLine($"Error uploading CV: {ex.Message}");
+                    return RedirectToAction("Index"); // Redirect back to the profile page
+                }
+            }
+
+            // Handle invalid file or other errors
+            return RedirectToAction("Index"); // Redirect back to the profile page
+        }
+      
+
+    // POST: People/Create
+    // To protect from overposting attacks, enable the specific properties you want to bind to.
+    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+    [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("ID,Password,FirstName,LastName,Email,Phone")] User User)
         {

@@ -1,4 +1,4 @@
-﻿@model BitirmeProj.Models.User
+﻿@model BitirmeProj.Models.UserProfileViewModel
 
 @{
     ViewData["Title"] = "Profile";
@@ -72,25 +72,79 @@
                 <button id="editProfileBtn" class="btn btn-light">Edit</button>
             <div id="profileDetails" class="profile-details">
 
-                <p><strong>Username:</strong> @Model.UserName</p>
-                <p><strong>Email:</strong> @Model.Email</p>
-                <p><strong>First Name:</strong> @Model.FirstName</p>
-                <p><strong>Last Name:</strong> @Model.LastName</p>
-                <p><strong>Gender:</strong> @(Model.Gender == 0 ? "Female" : "Male")</p>
-                <p><strong>Title:</strong> @Model.Title</p>
-                <p><strong>Phone:</strong> @Model.Phone</p>
-                <p><strong>Address:</strong> @Model.Address</p>
+                <p><strong>Username:</strong> @Model.User.UserName</p>
+                <p><strong>Email:</strong> @Model.User.Email</p>
+                <p><strong>First Name:</strong> @Model.User.FirstName</p>
+                <p><strong>Last Name:</strong> @Model.User.LastName</p>
+                <p><strong>Gender:</strong> @(Model.User.Gender == 0 ? "Female" : "Male")</p>
+                <p><strong>Title:</strong> @Model.User.Title</p>
+                <p><strong>Phone:</strong> @Model.User.Phone</p>
+                <p><strong>Address:</strong> @Model.User.Address</p>
             </div>
         
 
         <div class="user-info-lists border p-3">
-     <form asp-action="UploadCV" method="post" enctype="multipart/form-data">
-    <div class="form-group">
-        <label for="file">Upload PDF:</label>
-        <input type="file" id="file" name="file" accept=".pdf">
-    </div>
-    <button type="submit" class="btn btn-primary">Upload</button>
-</form>
+                    <h4>Upload CV</h4>
+                    <form method="post" enctype="multipart/form-data" action="/People/UploadCV">
+                        <input type="file" name="cvFile" accept=".pdf,.doc,.docx"> <!-- Allow only PDF, DOC, DOCX files -->
+                        <br />
+                        <small class="form-text text-muted">Please select a PDF, DOC, or DOCX file.</small>
+                        <button class="btn btn-success" type="submit">Upload CV</button>
+                    </form>
+                    
+                    
+
+
+
+                    <h4>Uploaded CVs</h4>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th scope="col">CV Name</th>
+                                    <th scope="col">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var cv in Model.CV)
+                                {
+                                    <tr>
+                                        <td>@cv.CVName</td>
+                                        <td>
+                                            <div class="btn-group" role="group" aria-label="CV actions">
+                                                <a href="/cvs/@($"{cv.CVID}_{cv.CVName}")" class="btn btn-primary" download>Download</a>
+                                                <form action="/People/DeleteCV" method="post">
+                                                    <input type="hidden" name="CVID" value="@cv.CVID" />
+                                                    <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this CV?')">Delete</button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <script>
+                        function deleteCV(cvId) {
+                            if (confirm("Are you sure you want to delete this CV?")) {
+                                // Perform an AJAX request to delete the CV
+                                fetch(`/cv/delete/${cvId}`, {
+                                    method: 'DELETE'
+                                })
+                                    .then(response => {
+                                        if (response.ok) {
+                                            // Reload the page or update the UI as needed
+                                            window.location.reload();
+                                        } else {
+                                            console.error('Failed to delete CV');
+                                        }
+                                    })
+                                    .catch(error => console.error('Error:', error));
+                            }
+                        }
+                    </script>
+                    
                 <p><strong>Job Application:</strong></p>
 
                   
@@ -145,21 +199,21 @@
 
                     <div class="form-group">
                         <label for="UserName">Username</label>
-                        <input type="text" class="form-control" id="UserName" name="UserName" value="@Model.UserName" required>
+                        <input type="text" class="form-control" id="UserName" name="UserName" value="@Model.User.UserName" required>
                     </div>
                     <div class="form-group">
                         <label for="FirstName">First Name</label>
-                        <input type="text" class="form-control" id="FirstName" name="FirstName" value="@Model.FirstName" required>
+                        <input type="text" class="form-control" id="FirstName" name="FirstName" value="@Model.User.FirstName" required>
                     </div>
 
                     <div class="form-group">
                         <label for="LastName">Last Name</label>
-                        <input type="text" class="form-control" id="LastName" name="LastName" value="@Model.LastName" required>
+                        <input type="text" class="form-control" id="LastName" name="LastName" value="@Model.User.LastName" required>
                     </div>
 
                     <div class="form-group">
                         <label for="Email">Email</label>
-                        <input type="email" class="form-control" id="Email" name="Email" value="@Model.Email" required>
+                        <input type="email" class="form-control" id="Email" name="Email" value="@Model.User.Email" required>
                     </div>
 
 
