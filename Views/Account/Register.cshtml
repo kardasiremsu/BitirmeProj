@@ -85,13 +85,18 @@
                             @Html.TextBoxFor(Model => Model.Phone, new { @class = "form-control" })
                             @Html.ValidationMessageFor(Model => Model.Phone)
                         </div>
+                        <div class="form-group">
+                            @Html.LabelFor(Model => Model.Institution)
+                            @Html.TextBoxFor(Model => Model.Institution, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(Model => Model.Institution)
+                        </div>
 
                         <div class="form-group">
                             @Html.LabelFor(Model => Model.Address)
                             @Html.TextBoxFor(Model => Model.Address, new { @class = "form-control" })
                             @Html.ValidationMessageFor(Model => Model.Address)
                         </div>
-
+                        
 
                         <button type="submit" class="btn btn-primary">Register</button>
                         <div class="card-footer text-center">

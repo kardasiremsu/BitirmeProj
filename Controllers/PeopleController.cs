@@ -110,8 +110,41 @@ namespace BitirmeProj.Controllers
 
             return RedirectToAction("Index"); // Redirect to the index page after deletion
         }
-   
-    [HttpPost]
+
+
+        [HttpPost]
+        public IActionResult AddLanguage(Language model)
+        {
+            System.Diagnostics.Debug.WriteLine("model");
+            System.Diagnostics.Debug.WriteLine(model.Name);
+
+            if (ModelState.IsValid)
+            {
+                // Create a new Language object from the submitted form data
+                Language language = new Language
+                {
+                    Name = model.Name,
+                    Proficiency = model.Proficiency
+                    // Add other properties as needed
+                };
+
+                // Add the new language to the database
+                _context.Languages.Add(language);
+                _context.SaveChanges();
+
+                // Redirect the user to a success page or the profile page
+                return RedirectToAction("Index"); // Redirect to the index page after deletion
+
+            }
+            System.Diagnostics.Debug.WriteLine("Error uploading languages");
+            // If the model state is not valid, return the form view with validation errors
+            return RedirectToAction("Index"); // Redirect to the index page after deletion
+
+        }
+
+
+
+        [HttpPost]
         public IActionResult UploadCV(IFormFile cvFile)
         {
             if (cvFile != null && cvFile.Length > 0)

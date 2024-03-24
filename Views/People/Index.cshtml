@@ -66,37 +66,36 @@
 
         </div>
         <div class="col-md-8">
-            <h2>Profile</h2>
+            <h2> @Model.User.FirstName  @Model.User.LastName</h2>
+            <h4>   @Model.User.Institution - @Model.User.Title</h4>
            <div id="profileInfo">
 
-                <button id="editProfileBtn" class="btn btn-light">Edit</button>
+                <button id="editProfileBtn" class="btn btn-light">Edit Profile</button>
+                <br /><br />
             <div id="profileDetails" class="profile-details">
 
                 <p><strong>Username:</strong> @Model.User.UserName</p>
                 <p><strong>Email:</strong> @Model.User.Email</p>
-                <p><strong>First Name:</strong> @Model.User.FirstName</p>
-                <p><strong>Last Name:</strong> @Model.User.LastName</p>
+              
                 <p><strong>Gender:</strong> @(Model.User.Gender == 0 ? "Female" : "Male")</p>
-                <p><strong>Title:</strong> @Model.User.Title</p>
+               
                 <p><strong>Phone:</strong> @Model.User.Phone</p>
                 <p><strong>Address:</strong> @Model.User.Address</p>
+                  
             </div>
-        
 
-        <div class="user-info-lists border p-3">
-                    <h4>Upload CV</h4>
+                <div class="user-info-lists border p-3">
+                    <h4 class="mb-4">Upload CV</h4>
                     <form method="post" enctype="multipart/form-data" action="/People/UploadCV">
-                        <input type="file" name="cvFile" accept=".pdf,.doc,.docx"> <!-- Allow only PDF, DOC, DOCX files -->
-                        <br />
-                        <small class="form-text text-muted">Please select a PDF, DOC, or DOCX file.</small>
+                        <div class="form-group">
+                            <label for="cvFile">Choose CV File:</label>
+                            <input type="file" class="form-control-file" id="cvFile" name="cvFile" accept=".pdf,.doc,.docx" required>
+                            <br /><small class="form-text text-muted">Please select a PDF, DOC, or DOCX file.</small>
+                        </div>
                         <button class="btn btn-success" type="submit">Upload CV</button>
                     </form>
-                    
-                    
 
-
-
-                    <h4>Uploaded CVs</h4>
+                    <h4 class="mt-5">Uploaded CVs</h4>
                     <div class="table-responsive">
                         <table class="table table-striped">
                             <thead>
@@ -123,7 +122,9 @@
                                 }
                             </tbody>
                         </table>
+                        <br />
                     </div>
+               
 
                     <script>
                         function deleteCV(cvId) {
@@ -189,8 +190,66 @@
                     {
                         <p>No jobs posted by this user.</p>
                     }
-                  
+
+
+                    <!-- Skills Form -->
+                    <form method="post" action="/Profile/AddSkill" class="my-4">
+                        <h5>Skills</h5>
+                        <div class="form-group">
+                            <label for="skillName">Skill Name:</label>
+                            <input type="text" id="skillName" name="SkillName" class="form-control" placeholder="Enter Skill Name" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add Skill</button>
+                    </form>
+
+                    <!-- Work Experience Form -->
+                    <form method="post" action="/People/AddWorkExperience" class="my-4">
+                        <h5>Work Experience</h5>
+                        <div class="form-group">
+                            <label for="companyName">Company Name:</label>
+                            <input type="text" id="companyName" name="CompanyName" class="form-control" placeholder="Enter Company Name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="position">Position:</label>
+                            <input type="text" id="position" name="Position" class="form-control" placeholder="Enter Position" required>
+                        </div>
+                        <!-- Add other fields as needed -->
+                        <button type="submit" class="btn btn-primary">Add Work Experience</button>
+                    </form>
+
+                    <!-- Languages Form -->
+                    <form method="post" action="/People/AddLanguage" class="my-4">
+                        <h5>Languages</h5>
+                        <div class="form-group">
+                            <label for="Name">Language Name:</label>
+                            <input type="text" id="Name" name="Name" class="form-control" placeholder="Enter Language Name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="proficiency">Proficiency:</label>
+                            <input type="text" id="proficiency" name="Proficiency" class="form-control" placeholder="Enter Proficiency" required>
+                        </div>
+                        <!-- Add other fields as needed -->
+                        <button type="submit" class="btn btn-primary">Add Language</button>
+                    </form>
+
+                    <!-- Schools Form -->
+                    <form method="post" action="/Profile/AddSchool" class="my-4">
+                        <h5>Education</h5>
+                        <div class="form-group">
+                            <label for="schoolName">School Name:</label>
+                            <input type="text" id="schoolName" name="SchoolName" class="form-control" placeholder="Enter School Name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="degree">Degree:</label>
+                            <input type="text" id="degree" name="Degree" class="form-control" placeholder="Enter Degree" required>
+                        </div>
+                        <!-- Add other fields as needed -->
+                        <button type="submit" class="btn btn-primary">Add School</button>
+                    </form>
+
             </div>
+
+
             </div>
             <div id="editProfileForm" style="display: none;">
                 <!-- Editable fields will be displayed here -->

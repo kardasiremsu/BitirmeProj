@@ -84,6 +84,7 @@ namespace BitirmeProj.Controllers
                 user.Title = model.Title;
                 user.Phone = model.Phone;
                 user.Address = model.Address;
+                user.Institution = model.Institution;
                 _context.Users.Add(user);
                 _context.SaveChanges();
                 TempData["SuccessMessage"] = "User is created successfully";

@@ -17,8 +17,9 @@ namespace BitirmeProj.Models
         public int? Gender { get; set; } //0: Female, 1:Male
         public string Title { get; set; }
         public string Phone { get; set; }
+      
         public string Address { get; set; }
-       
+        public string? Institution { get; set; }
         public ICollection<CV> CVs { get; set; }
         public User()
         {

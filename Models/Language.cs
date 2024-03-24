@@ -6,9 +6,9 @@ namespace BitirmeProj.Models
     {
         [Key]
         public int LanguageID { get; set; }
-        public int Name { get; set; }
-
+        public string Name { get; set; }
+        public string? Proficiency {  get; set; } 
         // Navigation property
-        public ICollection<CVLanguage> CVLanguages { get; set; }
+        public ICollection<CVLanguage>? CVLanguages { get; set; }
     }
 }

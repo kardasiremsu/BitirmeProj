@@ -29,5 +29,6 @@ namespace BitirmeProj.Models
         public string Title { get; set; }
         public string Phone { get; set; }
         public string Address { get; set; }
+        public string? Institution { get; set; }
     }
 }

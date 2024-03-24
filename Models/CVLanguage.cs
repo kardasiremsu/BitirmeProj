@@ -10,7 +10,7 @@ namespace BitirmeProj.Models
 
         public int CVID { get; set; }
         public int LanguageID { get; set; }
-        public int Level { get; set; }
+        public int Proficiency { get; set; }
 
         // Foreign keys
         [ForeignKey("CVID")]
