@@ -79,12 +79,12 @@ namespace BitirmeProj.Controllers
                 case "titleDesc":
                     jobs = jobs.OrderByDescending(j => j.JobTitle);
                     break;
-                case "date":
+                /*case "date":
                     jobs = jobs.OrderBy(j => j.JobCreatedDate);
                     break;
                 case "dataDesc":
                     jobs = jobs.OrderByDescending(j => j.JobCreatedDate);
-                    break;
+                    break;*/
                 default:
                     jobs = jobs.OrderBy(j => j.JobTitle);
                     break;
