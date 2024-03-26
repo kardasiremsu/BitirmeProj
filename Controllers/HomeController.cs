@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BitirmeProj.Services;
-
+using Microsoft.AspNetCore.Identity; // Import the necessary namespaces
 
 namespace BitirmeProj.Controllers
 {
@@ -26,29 +26,7 @@ namespace BitirmeProj.Controllers
             _context = context;
             _userSessionService = userSessionService;
         }
-        public IActionResult PostJob()
-        {
-
-            return View();
-        }
-
-
-        // POST: Jobs/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> PostJob([Bind("ID,PersonID,JobTitle,JobType,JobLocation,Description,Salary,IsActive,Date")] JobListing job)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(job);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["PersonID"] = new SelectList(_context.Users, "ID", "ID", job.PostedBy);
-            return View(job);
-        }
+    
 
         public async Task<IActionResult> Index(string sortOrder, string searchTerm, int? experienceLevel, string jobLocation, int? jobType)
         {
@@ -97,6 +75,10 @@ namespace BitirmeProj.Controllers
                     break;
             }
 
+            User currentUser = _userSessionService.GetCurrentUser();
+
+            // Pass user data to the view
+            ViewBag.CurrentUser = currentUser;
             return View(await jobs.AsNoTracking().ToListAsync());
         }
 

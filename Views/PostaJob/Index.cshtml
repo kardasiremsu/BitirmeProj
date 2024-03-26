@@ -7,7 +7,6 @@
 }
 
 
-
 <div  id="jobPostingModal" tabindex="-1" aria-labelledby="jobPostingModalLabel" >
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -22,11 +21,12 @@
                         <label for="jobTitle">Job Title</label>
                         <input type="text" class="form-control" id="jobTitle" name="JobTitle" required>
                     </div>
-
-                    <div class="form-group">
-                        <label for="jobDescription">Job Description</label>
-                        <textarea class="form-control" id="jobDescription" name="JobDescription" rows="4" required></textarea>
+                    <div class="form-group mb-3">
+                        <label for="jobDescription" class="form-label">Job Description</label>
+                        <textarea id="jobDescription" name="JobDescription"></textarea>
                     </div>
+
+
 
                     <div class="form-group">
                         <label for="applicationDeadline">Application Deadline</label>
@@ -115,4 +115,13 @@
     var message = '@message';
     if (message)
         alert(message);
+</script>
+<script src="https://cdn.tiny.cloud/1/4ejpm1kl43jkfk5tdpka6nj625zumegnbls3og2va1ls5f1x/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
+<script>
+    tinymce.init({
+        selector: '#jobDescription', // Target the textarea by its ID
+        plugins: 'lists link',
+        toolbar: 'undo redo | bold italic underline | bullist numlist | link',
+        menubar: false
+    });
 </script>

@@ -13,6 +13,7 @@ namespace BitirmeProj.Models
         public int JobID { get; set; }
         public string JobTitle { get; set; }
         public string JobDescription { get; set; }
+        [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
         public DateTime ApplicationDeadline { get; set; }
         public int PostedBy { get; set; }
         public string JobLocation { get; set; }

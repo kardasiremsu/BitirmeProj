@@ -9,7 +9,9 @@ using BitirmeProj.Data;
 using BitirmeProj.Models;
 using BitirmeProj.Services;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity; // Import the necessary namespaces
 namespace BitirmeProj.Controllers
+
 {
     public class PeopleController : Controller
     {

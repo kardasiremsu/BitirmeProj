@@ -83,8 +83,8 @@
             }
 
         .job-details {
-            overflow-x: auto; /* Enable horizontal scrolling */
-            white-space: pre-wrap; /* Preserve whitespace and wrap lines */
+            overflow-x: hidden;
+            /* Enable horizontal scrolling */
         }
 
             .job-details pre {
@@ -180,37 +180,50 @@
                         </form>
                         @foreach (var item in Model)
                         {
-
+                            User currentUser = ViewBag.CurrentUser;
                             var userId = User.Identity.Name;
-                           
-                          
+
+
                             var postedByFullName = UserService.GetUserFullName(item.PostedBy, _context); // Assuming _context is available in your Razor view or controller
                             bool postedByCurrentUser = false;
-                            System.Diagnostics.Debug.WriteLine("currentuser");
-                            System.Diagnostics.Debug.WriteLine(postedByCurrentUser);
-                            System.Diagnostics.Debug.WriteLine("currentuser id");
-                            System.Diagnostics.Debug.WriteLine(userId);
 
-                            if (item.PostedBy == Convert.ToInt32(userId)){ postedByCurrentUser = true; }
+                            System.Diagnostics.Debug.WriteLine("currentuser");
+                            System.Diagnostics.Debug.WriteLine(currentUser.FirstName);
+                            System.Diagnostics.Debug.WriteLine("currentuser id");
+                            System.Diagnostics.Debug.WriteLine(currentUser.UserID);
+                            if (item.PostedBy == currentUser.UserID)
+                            {
+                                postedByCurrentUser = true;
+                            }
+                          
                             <div class="job-card">
                                 <p><strong>Posted By:</strong> @postedByFullName</p>
                                 <h2>@Html.DisplayFor(modelItem => item.JobTitle)</h2>
-                                <p><strong>Job Location:</strong> @Html.DisplayFor(modelItem => item.JobLocation)</p>
-                                <p><strong>Job Application Deadline:</strong> @Html.DisplayFor(modelItem => item.ApplicationDeadline)</p>
+                                <p><strong>Location:</strong> @Html.DisplayFor(modelItem => item.JobLocation)</p>
+                                <p><strong>Application Deadline:</strong> @Html.DisplayFor(modelItem => item.ApplicationDeadline)</p>
+
                                 <div class="job-details">
                                     <p><strong>Description:</strong></p>
-                                    <pre class="description-limit">@Html.Raw(item.JobDescription)</pre>
+                                    <div class="description-limit">
+                                        @Html.Raw(item.JobDescription)
+                                    </div>
                                     <p class="read-more-btn">Read More</p>
                                 </div>
-                                @if (postedByCurrentUser)
-                                {
-                                    <button type="button" class="btn btn-primary" onclick="editJob(@item.JobID)">Edit</button>
-                                }
-                                <form id="applyForm" method="post" action="/Home/CreateApplication">
-                                    <input type="hidden" id="jobID" name="jobID" value="">
-                                </form>
+                               
+                                    @if (postedByCurrentUser)
+                                    {
+                                        <button type="button" class="btn btn-primary" onclick="editJob(@item.JobID)">Edit</button>
+                                    }
+                                    <form id="applyForm" method="post" action="/Home/CreateApplication">
+                                        <input type="hidden" id="jobID" name="jobID" value="">
+                                    </form>
+                                    @if (!postedByCurrentUser)
+                                    {
+                                        <button type="button" class="btn btn-success" onclick="applyJob('@item.JobID')">Apply</button>
 
-                                <button type="button" class="btn btn-success" onclick="applyJob('@item.JobID')">Apply</button>
+                                    }
+                                
+
                                 <!--   <a class="read-more-btn">Read More</a>
                                     <button type="button" class="btn btn-primary" onclick="viewJobDetails({
                                     jobID: '@item.JobID',
