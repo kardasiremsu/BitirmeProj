@@ -21,10 +21,24 @@ namespace BitirmeProj.Models
         public string Address { get; set; }
         public string? Institution { get; set; }
         public ICollection<CV> CVs { get; set; }
+        public ICollection<UserSchool> UserSchools { get; set; }
+        public ICollection<UserWork> UserWorks { get; set; }
+        public ICollection<UserReference> UserReferences { get; set; }
+        public ICollection<UserLanguage> UserLanguages { get; set; }
+        public ICollection<UserSkill> UserSkills { get; set; }
         public User()
         {
             CVs = new List<CV>();
-        }
+             // Navigation properties for relationships
+    
+       
+            UserSchools = new List<UserSchool>();
+            UserWorks = new List<UserWork>();
+            UserReferences = new List<UserReference>();
+            UserLanguages = new List<UserLanguage>();
+            UserSkills = new List<UserSkill>();
+        
+    }
 
     }
 }

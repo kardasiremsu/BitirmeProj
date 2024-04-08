@@ -9,7 +9,8 @@ using BitirmeProj.Data;
 using BitirmeProj.Models;
 using BitirmeProj.Services;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity; // Import the necessary namespaces
+using Microsoft.AspNetCore.Identity;
+using System.Drawing.Printing; // Import the necessary namespaces
 namespace BitirmeProj.Controllers
 
 {
@@ -61,12 +62,36 @@ namespace BitirmeProj.Controllers
            
             // Pass job application IDs and job listings to the view using ViewBag
             ViewBag.JobApplicationIds = jobApplicationIds;
-         
+     
+            var userSkillIDs = _context.UserSkills
+        .Where(a => a.UserID == userId)
+        .ToList();
 
-            // Pass job application IDs and user jobs to the view using ViewBag
-            ViewBag.UserJobs = userJobs;
+          
+
+            ViewBag.UserSkills = userSkillIDs;
+            var WorkExperienceIDs = _context.UserWorks
+      .Where(a => a.UserID == userId)
+      .ToList();
+            
+            ViewBag.WorkExperiences = WorkExperienceIDs;
+            var userLanguagesIDs = _context.UserLanguages
+       .Where(a => a.UserID == userId)
+       .ToList();
+
+            ViewBag.UserLanguages = userLanguagesIDs;
+
+            var userSchoolsID = _context.UserSchools
+       .Where(a => a.UserID == userId)
+       .ToList();
+
+
+
+            ViewBag.UserSchools = userSchoolsID;
+            
+
             // Pass job application IDs to the view using ViewBag
-            var viewModel = new UserProfileViewModel { User = currentUser, JobApplicationIds = jobApplicationIds, CV = cvs };
+            var viewModel = new UserProfileViewModel { User = currentUser, JobApplicationIds = jobApplicationIds, CV = cvs};
 
             return View(viewModel);
         }
@@ -112,38 +137,6 @@ namespace BitirmeProj.Controllers
 
             return RedirectToAction("Index"); // Redirect to the index page after deletion
         }
-
-
-        [HttpPost]
-        public IActionResult AddLanguage(Language model)
-        {
-            System.Diagnostics.Debug.WriteLine("model");
-            System.Diagnostics.Debug.WriteLine(model.Name);
-
-            if (ModelState.IsValid)
-            {
-                // Create a new Language object from the submitted form data
-                Language language = new Language
-                {
-                    Name = model.Name,
-                    Proficiency = model.Proficiency
-                    // Add other properties as needed
-                };
-
-                // Add the new language to the database
-                _context.Languages.Add(language);
-                _context.SaveChanges();
-
-                // Redirect the user to a success page or the profile page
-                return RedirectToAction("Index"); // Redirect to the index page after deletion
-
-            }
-            System.Diagnostics.Debug.WriteLine("Error uploading languages");
-            // If the model state is not valid, return the form view with validation errors
-            return RedirectToAction("Index"); // Redirect to the index page after deletion
-
-        }
-
 
 
         [HttpPost]
@@ -267,6 +260,353 @@ namespace BitirmeProj.Controllers
                 return RedirectToAction(nameof(Index));
             }
             return View(user);
+        }
+
+
+
+
+
+        [HttpPost]
+        public IActionResult AddSkill(UserSkill model)
+        {
+            System.Diagnostics.Debug.WriteLine("addskill");
+            System.Diagnostics.Debug.WriteLine(model.Name);
+            System.Diagnostics.Debug.WriteLine(model.Experience);
+            User currentUser = _userSessionService.GetCurrentUser();
+            var currentUserId = currentUser.UserID;
+            System.Diagnostics.Debug.WriteLine("287");
+
+            if (ModelState.IsValid)
+            {
+                // Check if the skill already exists in the database
+
+                System.Diagnostics.Debug.WriteLine("291");
+
+                var existingSkill = _context.Skills.FirstOrDefault(s => s.Name == model.Name);
+                int skillId;
+                var existingSkillForUser = _context.UserSkills.FirstOrDefault(s => s.Name == model.Name);
+
+                // Eğer beceri mevcut değilse, yeni bir beceri oluştur ve veritabanına ekle
+                if (existingSkill == null)
+                {
+                    System.Diagnostics.Debug.WriteLine("300");
+
+                    Skill newSkill = new Skill { Name = model.Name };
+                    _context.Skills.Add(newSkill);
+                    _context.SaveChanges();
+
+                    // Yeni becerinin SkillID'sini al
+                    skillId = newSkill.SkillID;
+                    UserSkill newUserSkill = new UserSkill
+                    {
+
+                        UserID = currentUserId,
+                        SkillID = skillId,
+                        Experience = model.Experience,
+                        Name = model.Name
+                    };
+
+                    _context.UserSkills.Add(newUserSkill);
+                    _context.SaveChanges();
+
+                }
+                else if(existingSkillForUser == null)
+                {
+                    System.Diagnostics.Debug.WriteLine("330");
+                    skillId = existingSkill.SkillID;
+                    // Kullanıcının beceri listesine yeni beceriyi ekle
+                    UserSkill newUserSkill = new UserSkill
+                    {
+
+                        UserID = currentUserId,
+                        SkillID = skillId,
+                        Experience = model.Experience,
+                        Name = model.Name
+                    };
+
+                    _context.UserSkills.Add(newUserSkill);
+                    _context.SaveChanges();
+                }
+              
+
+
+
+                return RedirectToAction("Index");
+            }
+
+            foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
+            {
+                var errorMessage = error.ErrorMessage;
+                // Hata mesajını işleyin veya hata detaylarını inceleyin
+                System.Diagnostics.Debug.WriteLine(errorMessage);
+            }
+            System.Diagnostics.Debug.WriteLine("336");
+
+            return View("Error");
+        }
+        [HttpPost]
+        public IActionResult DeleteSkill(int SkillID)
+        {
+            // Gelen SkillID'ye sahip beceriyi bul
+            var skillToDelete = _context.UserSkills.FirstOrDefault(s => s.SkillID == SkillID);
+
+            if (skillToDelete != null)
+            {
+                try
+                {
+                    // Skill'i veritabanından sil
+                    _context.UserSkills.Remove(skillToDelete);
+                    _context.SaveChanges();
+                    TempData["SuccessMessage"] = "Skill successfully deleted.";
+                }
+                catch (Exception ex)
+                {
+                    // Silme işlemi sırasında bir hata oluşursa, hata mesajını göster
+                    TempData["ErrorMessage"] = $"An error occurred while deleting the skill: {ex.Message}";
+                }
+            }
+            else
+            {
+                // Belirtilen SkillID'ye sahip bir beceri bulunamadıysa, hata mesajı göster
+                TempData["ErrorMessage"] = "Skill not found.";
+            }
+
+            // Silme işleminden sonra kullanıcıyı bir yönlendirme yaparak başka bir sayfaya gönderin
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public IActionResult AddWorkExperience(UserWork model)
+        {
+            if (ModelState.IsValid)
+            {
+                // Burada model verilerini işleyin ve veritabanına ekleyin
+                // Örneğin:s
+                var currentUser = _userSessionService.GetCurrentUser();
+                System.Diagnostics.Debug.WriteLine(model.Title);
+                System.Diagnostics.Debug.WriteLine(model.StartDate);
+                var newWorkExperience = new UserWork
+                {
+                    UserID = currentUser.UserID,
+            
+                    StartDate = model.StartDate,
+                    FinishDate = model.FinishDate,
+                    Title = model.Title,
+                    Institution = model.Institution,
+                    Description = model.Description
+                };
+
+                _context.UserWorks.Add(newWorkExperience);
+                _context.SaveChanges();
+
+                // Eğer başarıyla eklendiyse, başka bir işlem yapabilir veya bir mesaj döndürebilirsiniz
+                return RedirectToAction("Index", "Home"); // Örneğin, ana sayfaya yönlendirme
+            }
+            else
+            {
+                // Geçersiz model durumunda hata mesajları ile birlikte aynı formu tekrar görüntüleyin
+                return View(model);
+            }
+        }
+
+        public IActionResult DeleteWorkExperience(int UserWorkID)
+        {
+            // Gelen SkillID'ye sahip beceriyi bul
+            var worktoDelete = _context.UserWorks.FirstOrDefault(s => s.UserWorksID == UserWorkID);
+
+            if (worktoDelete != null)
+            {
+                try
+                {
+                    // Language'i veritabanından sil
+                    _context.UserWorks.Remove(worktoDelete);
+                    _context.SaveChanges();
+                    TempData["SuccessMessage"] = "Work successfully deleted.";
+                }
+                catch (Exception ex)
+                {
+                    // Silme işlemi sırasında bir hata oluşursa, hata mesajını göster
+                    TempData["ErrorMessage"] = $"An error occurred while deleting the works: {ex.Message}";
+                }
+            }
+            else
+            {
+                // Belirtilen LanguageID'ye sahip bir beceri bulunamadıysa, hata mesajı göster
+                TempData["ErrorMessage"] = "Work not found.";
+            }
+
+            // Silme işleminden sonra kullanıcıyı bir yönlendirme yaparak başka bir sayfaya gönderin
+            return RedirectToAction("Index");
+        }
+
+
+        [HttpPost]
+        public IActionResult AddLanguage(UserLanguage model)
+        {
+            System.Diagnostics.Debug.WriteLine("addLanguage");
+            System.Diagnostics.Debug.WriteLine(model.Name);
+            System.Diagnostics.Debug.WriteLine(model.Proficiency);
+            User currentUser = _userSessionService.GetCurrentUser();
+            var currentUserId = currentUser.UserID;
+
+            if (ModelState.IsValid)
+            {
+                // Check if the Language already exists in the database
+
+
+                var existingLanguage = _context.Languages.FirstOrDefault(s => s.Name == model.Name);
+                int LanguageId;
+                var existingLanguageForUser = _context.UserLanguages.FirstOrDefault(s => s.Name == model.Name);
+
+                // Eğer beceri mevcut değilse, yeni bir beceri oluştur ve veritabanına ekle
+                if (existingLanguage == null)
+                {
+                    
+                    Language newLanguage = new Language { Name = model.Name };
+                    _context.Languages.Add(newLanguage);
+                    _context.SaveChanges();
+
+                    // Yeni becerinin LanguageID'sini al
+                    LanguageId = newLanguage.LanguageID;
+                    UserLanguage newUserLanguage = new UserLanguage
+                    {
+
+                        UserID = currentUserId,
+                        LanguageID = LanguageId,
+                        Proficiency = model.Proficiency,
+                        Name = model.Name
+                    };
+
+                    _context.UserLanguages.Add(newUserLanguage);
+                    _context.SaveChanges();
+
+                }
+                else if (existingLanguageForUser == null)
+                {
+                    System.Diagnostics.Debug.WriteLine("330");
+                    LanguageId = existingLanguage.LanguageID;
+                    // Kullanıcının beceri listesine yeni beceriyi ekle
+                    UserLanguage newUserLanguage = new UserLanguage
+                    {
+
+                        UserID = currentUserId,
+                        LanguageID = LanguageId,
+                        Proficiency = model.Proficiency,
+                        Name = model.Name
+                    };
+
+                    _context.UserLanguages.Add(newUserLanguage);
+                    _context.SaveChanges();
+                }
+
+
+
+
+                return RedirectToAction("Index");
+            }
+
+            foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
+            {
+                var errorMessage = error.ErrorMessage;
+                // Hata mesajını işleyin veya hata detaylarını inceleyin
+                System.Diagnostics.Debug.WriteLine(errorMessage);
+            }
+            System.Diagnostics.Debug.WriteLine("336");
+
+            return View("Error");
+        }
+        [HttpPost]
+        public IActionResult DeleteLanguage(int LanguageID)
+        {
+            // Gelen SkillID'ye sahip beceriyi bul
+            var languagetoDelete = _context.UserLanguages.FirstOrDefault(s => s.LanguageID == LanguageID);
+
+            if (languagetoDelete != null)
+            {
+                try
+                {
+                    // Language'i veritabanından sil
+                    _context.UserLanguages.Remove(languagetoDelete);
+                    _context.SaveChanges();
+                    TempData["SuccessMessage"] = "Language successfully deleted.";
+                }
+                catch (Exception ex)
+                {
+                    // Silme işlemi sırasında bir hata oluşursa, hata mesajını göster
+                    TempData["ErrorMessage"] = $"An error occurred while deleting the Language: {ex.Message}";
+                }
+            }
+            else
+            {
+                // Belirtilen LanguageID'ye sahip bir beceri bulunamadıysa, hata mesajı göster
+                TempData["ErrorMessage"] = "Language not found.";
+            }
+
+            // Silme işleminden sonra kullanıcıyı bir yönlendirme yaparak başka bir sayfaya gönderin
+            return RedirectToAction("Index");
+        }
+
+
+        [HttpPost]
+        public IActionResult AddSchool(UserSchool model)
+        {
+            if (ModelState.IsValid)
+            {
+                // Burada model verilerini işleyin ve veritabanına ekleyin
+                // Örneğin:s
+                var currentUser = _userSessionService.GetCurrentUser();
+               
+                var newSchoolExperience = new UserSchool
+                {
+                    UserID = currentUser.UserID,
+
+                    GraduationYear = model.GraduationYear,
+                    Name = model.Name,
+                    Degree = model.Degree
+                };
+
+                _context.UserSchools.Add(newSchoolExperience);
+                _context.SaveChanges();
+
+                // Eğer başarıyla eklendiyse, başka bir işlem yapabilir veya bir mesaj döndürebilirsiniz
+                return RedirectToAction("Index", "Home"); // Örneğin, ana sayfaya yönlendirme
+            }
+            else
+            {
+                // Geçersiz model durumunda hata mesajları ile birlikte aynı formu tekrar görüntüleyin
+                return View(model);
+            }
+        }
+
+
+        public IActionResult DeleteSchool(int UserSchoolID)
+        {
+            // Gelen SkillID'ye sahip beceriyi bul
+            var schooltoDelete = _context.UserSchools.FirstOrDefault(s => s.UserSchoolID == UserSchoolID);
+
+            if (schooltoDelete != null)
+            {
+                try
+                {
+                    // Language'i veritabanından sil
+                    _context.UserSchools.Remove(schooltoDelete);
+                    _context.SaveChanges();
+                    TempData["SuccessMessage"] = "School successfully deleted.";
+                }
+                catch (Exception ex)
+                {
+                    // Silme işlemi sırasında bir hata oluşursa, hata mesajını göster
+                    TempData["ErrorMessage"] = $"An error occurred while deleting the School: {ex.Message}";
+                }
+            }
+            else
+            {
+                // Belirtilen LanguageID'ye sahip bir beceri bulunamadıysa, hata mesajı göster
+                TempData["ErrorMessage"] = "School not found.";
+            }
+
+            // Silme işleminden sonra kullanıcıyı bir yönlendirme yaparak başka bir sayfaya gönderin
+            return RedirectToAction("Index");
         }
 
         /*  // GET: People/Edit/5

@@ -3,20 +3,18 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BitirmeProj.Models
 {
-    public class CVReference
+    public class UserReference
     {
         [Key]
-        public int CVReferencesID { get; set; }
+        public int UserReferencesID { get; set; }
 
-        public int CVID { get; set; }
+        public int UserID { get; set; }
         public string ReferenceFullName { get; set; }
         public string ReferenceMobile { get; set; }
         public string ReferenceMail { get; set; }
         public string ReferenceTitle { get; set; }
+        [ForeignKey("UserID")]
+        public User User { get; set; }
 
-        // Foreign key
-        [ForeignKey("CVID")]
-        public CV CV { get; set; }
-    
     }
 }

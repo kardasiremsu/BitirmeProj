@@ -15,11 +15,11 @@ namespace BitirmeProj.Data
         }
         public DbSet<User> Users { get; set; }
         public DbSet<CV> CVs { get; set; }
-        public DbSet<CVSchool> CVSchools { get; set; }
-        public DbSet<CVWork> CVWorks { get; set; }
-        public DbSet<CVReference> CVReferences { get; set; }
-        public DbSet<CVLanguage> CVLanguages { get; set; }
-        public DbSet<CVSkill> CVSkills { get; set; }
+        public DbSet<UserSchool> UserSchools { get; set; }
+        public DbSet<UserWork> UserWorks { get; set; }
+        public DbSet<UserReference> UserReferences { get; set; }
+        public DbSet<UserLanguage> UserLanguages { get; set; }
+        public DbSet<UserSkill> UserSkills { get; set; }
         public DbSet<Language> Languages { get; set; }
         public DbSet<School> Schools { get; set; }
         public DbSet<Skill> Skills { get; set; }

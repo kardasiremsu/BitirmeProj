@@ -9,6 +9,6 @@ namespace BitirmeProj.Models
         public string Name { get; set; }
         public string? Degree {  get; set; }
         // Navigation property
-        public ICollection<CVSchool> CVSchools { get; set; }
+        //public ICollection<UserSchool> UserSchools { get; set; }
     }
 }

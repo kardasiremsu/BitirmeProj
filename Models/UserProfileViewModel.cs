@@ -7,7 +7,7 @@
         public List<CV>? CV { get; set; }
         public List<Skill>? Skill { get; set; }
         public List<School>? School { get; set; }
-        public List<CVWork>? CVWork { get; set; }
+        public List<UserSkill>? UserSkill { get; set; }
 
     }
 }

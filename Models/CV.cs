@@ -18,19 +18,6 @@ namespace BitirmeProj.Models
         [ForeignKey("UserID")]
         public User User { get; set; }
 
-        // Navigation properties for relationships
-        public ICollection<CVSchool> CVSchools { get; set; }
-        public ICollection<CVWork> CVWorks { get; set; }
-        public ICollection<CVReference> CVReferences { get; set; }
-        public ICollection<CVLanguage> CVLanguages { get; set; }
-        public ICollection<CVSkill> CVSkills { get; set; }
-        public CV()
-        {
-            CVSchools = new List<CVSchool>();
-            CVWorks = new List<CVWork>();
-            CVReferences = new List<CVReference>();
-            CVLanguages = new List<CVLanguage>();
-            CVSkills = new List<CVSkill>();
-        }
+       
     }
 }
