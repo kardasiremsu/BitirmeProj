@@ -39,11 +39,7 @@ namespace BitirmeProj.Controllers
             {
                 jobs = jobs.Where(j => j.JobLocation == jobLocation);
             }
-            System.Diagnostics.Debug.WriteLine("search term:");
-            System.Diagnostics.Debug.WriteLine(searchTerm);
-            System.Diagnostics.Debug.WriteLine("jobLocation");
-            System.Diagnostics.Debug.WriteLine(jobLocation);
-         
+          
             if (!string.IsNullOrEmpty(searchTerm))
             {
                 jobs = jobs.Where(j => j.JobTitle.Contains(searchTerm) || j.JobDescription.Contains(searchTerm));

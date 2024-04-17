@@ -1,11 +1,13 @@
 using BitirmeProj.Data;
 using System;
 using BitirmeProj.Services;
+using BitirmeProj.Models;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
+
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDBContext>(options =>
@@ -13,6 +15,7 @@ builder.Services.AddDbContext<ApplicationDBContext>(options =>
    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
 });
 builder.Services.AddSingleton<IUserSessionService, UserSessionService>();
+
 
 var app = builder.Build();
 

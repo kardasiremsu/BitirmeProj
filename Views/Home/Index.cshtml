@@ -168,7 +168,6 @@
 
                 </div>
                 <div class="col-md-9">
-                    
                     <div class="container">
                         <form asp-action="Index" method="get">
                             <div class="input-group mb-3">
@@ -177,7 +176,33 @@
                                     <button class="btn btn-outline-secondary" type="submit">Search</button>
                                 </div>
                             </div>
+
                         </form>
+                   <!--
+
+                    <div class="container">
+                                            <form asp-action="Index" method="get" onsubmit="return false;">
+                                                <div class="input-group mb-3">
+                                                    <input type="text" class="form-control" placeholder="Search" name="searchTerm" id="searchInput">
+                                                </div>
+                                            </form>
+
+                                            <script>
+                                                document.getElementById("searchInput").addEventListener("input", function () {
+                                                    this.form.submit(); // Submit the form whenever the input value changes
+                                                });
+                                            </script>
+
+
+
+
+                   --> 
+                    </div>
+                     
+                     
+                        <div class="col-md-12">
+                            <h5> @Model.Count() jobs are found.</h5>
+                        </div>
                         @foreach (var item in Model)
                         {
                             User currentUser = ViewBag.CurrentUser;
@@ -187,10 +212,7 @@
                             var postedByFullName = UserService.GetUserFullName(item.PostedBy, _context); // Assuming _context is available in your Razor view or controller
                             bool postedByCurrentUser = false;
 
-                            System.Diagnostics.Debug.WriteLine("currentuser");
-                            System.Diagnostics.Debug.WriteLine(currentUser.FirstName);
-                            System.Diagnostics.Debug.WriteLine("currentuser id");
-                            System.Diagnostics.Debug.WriteLine(currentUser.UserID);
+                           
                             if (item.PostedBy == currentUser.UserID)
                             {
                                 postedByCurrentUser = true;
@@ -243,6 +265,8 @@
                     </div>
                 </div>
             </div>
+        
+
         </div>
 
         <script>
