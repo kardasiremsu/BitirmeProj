@@ -39,6 +39,11 @@ namespace BitirmeProj.Controllers
 
         public IActionResult PostJob()
         {
+            User currentUser = _userSessionService.GetCurrentUser();
+
+            // Pass user data to the view
+            ViewBag.CurrentUser = currentUser;
+
             return View();
         }
 
@@ -46,15 +51,7 @@ namespace BitirmeProj.Controllers
         [HttpPost]
         public ActionResult PostJob(JobListing model)
         {
-            System.Diagnostics.Debug.WriteLine("!!!!!!");
-            System.Diagnostics.Debug.WriteLine(model.WorkPlaceType);
-            System.Diagnostics.Debug.WriteLine(model.JobTitle);
-            System.Diagnostics.Debug.WriteLine(model.JobType);
-            System.Diagnostics.Debug.WriteLine("!!!!!!");
-            System.Diagnostics.Debug.WriteLine(model.JobLocation);
-            System.Diagnostics.Debug.WriteLine("Job TYPE");
-            System.Diagnostics.Debug.WriteLine(model.JobType);
-
+            System.Diagnostics.Debug.WriteLine("HERE!!!!");
             try
             {
                 JobListing job = new JobListing();
@@ -82,7 +79,7 @@ namespace BitirmeProj.Controllers
             }
             catch (Exception ex)
             {
-
+                System.Diagnostics.Debug.WriteLine("HERE error!");
                 return Problem(ex.InnerException.Message);
             }
 

@@ -6,9 +6,9 @@ namespace BitirmeProj.Models
     {
         [Key]
         public int SkillID { get; set; }
-        public int Name { get; set; }
+        public string Name { get; set; }
 
         // Navigation property
-        public ICollection<CVSkill> CVSkills { get; set; }
+        public ICollection<UserSkill>? UserSkills { get; set; }
     }
 }

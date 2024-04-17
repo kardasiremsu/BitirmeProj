@@ -9,7 +9,7 @@ namespace BitirmeProj.Models
         public int CVID { get; set; }
 
         public int UserID { get; set; }
-        public int CVFile { get; set; } // Replace with appropriate data type
+        public byte[]? CVFile { get; set; } // Replace with appropriate data type
         public int LastUpdateDate { get; set; }
         public int CreationDate { get; set; }
         public string CVName { get; set; }
@@ -18,11 +18,6 @@ namespace BitirmeProj.Models
         [ForeignKey("UserID")]
         public User User { get; set; }
 
-        // Navigation properties for relationships
-        public ICollection<CVSchool> CVSchools { get; set; }
-        public ICollection<CVWork> CVWorks { get; set; }
-        public ICollection<CVReference> CVReferences { get; set; }
-        public ICollection<CVLanguage> CVLanguages { get; set; }
-        public ICollection<CVSkill> CVSkills { get; set; }
+       
     }
 }

@@ -1,7 +1,7 @@
-﻿@model BitirmeProj.Models.User
+﻿@model BitirmeProj.Models.UserProfileViewModel
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Profile";
 }
 
 
@@ -66,71 +66,433 @@
 
         </div>
         <div class="col-md-8">
-            <h2>Profile</h2>
+            <h2> @Model.User.FirstName  @Model.User.LastName</h2>
+            <h4>   @Model.User.Institution - @Model.User.Title</h4>
            <div id="profileInfo">
 
-                <button id="editProfileBtn" class="btn btn-light">Edit</button>
+                <button id="editProfileBtn" class="btn btn-light">Edit Profile</button>
+                <br /><br />
             <div id="profileDetails" class="profile-details">
 
-                <p><strong>Username:</strong> @Model.UserName</p>
-                <p><strong>Email:</strong> @Model.Email</p>
-                <p><strong>First Name:</strong> @Model.FirstName</p>
-                <p><strong>Last Name:</strong> @Model.LastName</p>
-                <p><strong>Gender:</strong> @(Model.Gender == 0 ? "Female" : "Male")</p>
-                <p><strong>Title:</strong> @Model.Title</p>
-                <p><strong>Phone:</strong> @Model.Phone</p>
-                <p><strong>Address:</strong> @Model.Address</p>
+                <p><strong>Username:</strong> @Model.User.UserName</p>
+                <p><strong>Email:</strong> @Model.User.Email</p>
+              
+                <p><strong>Gender:</strong> @(Model.User.Gender == 0 ? "Female" : "Male")</p>
+               
+                <p><strong>Phone:</strong> @Model.User.Phone</p>
+                <p><strong>Address:</strong> @Model.User.Address</p>
+                  
             </div>
-        
 
-        <div class="user-info-lists border p-3">
-            <p><strong>CVs:</strong> model.CVs</p>
-                <p><strong>Job Application:</strong> SQL will be inserted</p>
-                <p><strong>Jobs:</strong> SQL will be inserted</p>
-
-        
+             
             </div>
-            </div>
-            <div id="editProfileForm" style="display: none;">
-                <!-- Editable fields will be displayed here -->
-                <form id="editForm">
-                    @Html.AntiForgeryToken()
-
-                    <div class="form-group">
-                        <label for="UserName">Username</label>
-                        <input type="text" class="form-control" id="UserName" name="UserName" value="@Model.UserName" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="FirstName">First Name</label>
-                        <input type="text" class="form-control" id="FirstName" name="FirstName" value="@Model.FirstName" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="LastName">Last Name</label>
-                        <input type="text" class="form-control" id="LastName" name="LastName" value="@Model.LastName" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="Email">Email</label>
-                        <input type="email" class="form-control" id="Email" name="Email" value="@Model.Email" required>
-                    </div>
 
 
-                     <div class="form-group">
-            <label for="Gender">Gender</label>
-            <select class="form-control" id="Gender" name="Gender" required>
-                <option value="">Select Gender</option>
-                <option value="0">Female</option>
-                <option value="1">Male</option>
-                <option value="2">Other</option>
-            </select>
+           
         </div>
-                    <!-- Add other editable fields -->
-                    <button id="cancelEditBtn" type="button" class="btn btn-secondary">Cancel</button>
 
-                    <button id="saveProfileBtn" type="button" class="btn btn-primary">Save</button>
-                </form>
+        <div id="editProfileForm" style="display: none;">
+            <!-- Editable fields will be displayed here -->
+            <form id="editForm">
+                @Html.AntiForgeryToken()
+
+                <div class="form-group">
+                    <label for="UserName">Username</label>
+                    <input type="text" class="form-control" id="UserName" name="UserName" value="@Model.User.UserName" required>
+                </div>
+                <div class="form-group">
+                    <label for="FirstName">First Name</label>
+                    <input type="text" class="form-control" id="FirstName" name="FirstName" value="@Model.User.FirstName" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="LastName">Last Name</label>
+                    <input type="text" class="form-control" id="LastName" name="LastName" value="@Model.User.LastName" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="Email">Email</label>
+                    <input type="email" class="form-control" id="Email" name="Email" value="@Model.User.Email" required>
+                </div>
+
+
+                <div class="form-group">
+                    <label for="Gender">Gender</label>
+                    <select class="form-control" id="Gender" name="Gender" required>
+                        <option value="">Select Gender</option>
+                        <option value="0">Female</option>
+                        <option value="1">Male</option>
+                        <option value="2">Other</option>
+                    </select>
+                </div>
+                <!-- Add other editable fields -->
+                <button id="cancelEditBtn" type="button" class="btn btn-secondary">Cancel</button>
+
+                <button id="saveProfileBtn" type="button" class="btn btn-primary">Save</button>
+            </form>
+        </div>
+                <div class="user-info-lists border p-3">
+                    <h4 class="mb-4">Upload CV</h4>
+                    <form method="post" enctype="multipart/form-data" action="/People/UploadCV">
+                        <div class="form-group">
+                            <label for="cvFile">Choose CV File:</label>
+                            <input type="file" class="form-control-file" id="cvFile" name="cvFile" accept=".pdf,.doc,.docx" required>
+                            <br /><small class="form-text text-muted">Please select a PDF, DOC, or DOCX file.</small>
+                        </div>
+                        <button class="btn btn-success" type="submit">Upload CV</button>
+                    </form>
+
+                    <h4 class="mt-5">Uploaded CVs</h4>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th scope="col">CV Name</th>
+                                    <th scope="col">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var cv in Model.CV)
+                                {
+                                    <tr>
+                                        <td>@cv.CVName</td>
+                                        <td>
+                                            <div class="btn-group" role="group" aria-label="CV actions">
+                                                <a href="/cvs/@($"{cv.CVID}_{cv.CVName}")" class="btn btn-primary" download>Download</a>
+                                                <form action="/People/DeleteCV" method="post">
+                                                    <input type="hidden" name="CVID" value="@cv.CVID" />
+                                                    <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this CV?')">Delete</button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                        <br />
+                    </div>
+               
+
+                    <script>
+                        function deleteCV(cvId) {
+                            if (confirm("Are you sure you want to delete this CV?")) {
+                                // Perform an AJAX request to delete the CV
+                                fetch(`/cv/delete/${cvId}`, {
+                                    method: 'DELETE'
+                                })
+                                    .then(response => {
+                                        if (response.ok) {
+                                            // Reload the page or update the UI as needed
+                                            window.location.reload();
+                                        } else {
+                                            console.error('Failed to delete CV');
+                                        }
+                                    })
+                                    .catch(error => console.error('Error:', error));
+                            }
+                        }
+                    </script>
+                    
+                <p><strong>Job Application:</strong></p>
+
+                  
+                    @if (ViewBag.JobApplicationIds != null && ViewBag.JobApplicationIds.Count > 0)
+                    {
+                        <div class="row">
+                            @foreach (var jobId in ViewBag.JobApplicationIds)
+                            {
+                                <div class="col-md-4 mb-4">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Job Application ID: @jobId</h5>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p>No job applications found for this user.</p>
+                    }
+                <p><strong>Job Posted by the User:</strong> </p>
+           
+                    @if (ViewBag.UserJobs != null && ViewBag.UserJobs.Count > 0)
+                    {
+                        <div class="row">
+                            @foreach (var job in ViewBag.UserJobs)
+                            {
+                                <div class="col-md-4 mb-4">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5 class="card-title">@job.JobTitle</h5>
+                                            <!-- Display other job details as needed -->
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p>No jobs posted by this user.</p>
+                    }
+
+
+                    <form method="post" action="/People/AddSkill" class="my-4">
+                        <h5>Add Skill</h5>
+                        <div class="form-group">
+                            <label for="Name">Skill Name:</label>
+                            <input type="text" id="Name" name="Name" class="form-control" placeholder="Enter Skill Name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="Experience">Experience Level:</label>
+                            <select id="Experience" name="Experience" class="form-control" required>
+                                <option value="Beginner">Beginner</option>
+                                <option value="Intermediate">Intermediate</option>
+                                <option value="Advanced">Advanced</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add Skill</button>
+                    </form>
+                    <p><strong>Skills for the User:</strong> </p>
+
+            @if (ViewBag.UserSkills != null && ViewBag.UserSkills.Count > 0)
+            {
+                <div class="row">
+                    @foreach (var skill in ViewBag.UserSkills)
+                    {
+                        <div class="col-md-3 mb-2">
+                            <span class="badge badge-primary bg-light">
+                                <strong class="text-primary">@skill.Name</strong> - <span class="text-dark">(@skill.Experience)</span>
+                                <form method="post" action="/People/DeleteSkill" onsubmit="return confirm('Are you sure you want to delete this skill?');" style="display: inline;">
+                                    <input type="hidden" name="SkillID" value="@skill.SkillID" />
+                                    <button type="submit" class="btn btn-sm btn-danger ml-1"><i class="fas fa-times"></i>X</button>
+                                </form>
+                            </span>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <p>No skill added for the user.</p>
+            }
+
+
+
+
+
+                    <!-- Work Experience Form -->
+                    <form method="post" action="/People/AddWorkExperience" class="my-4">
+                        <h5>Work Experience</h5>
+                <div class="form-group">
+                    <label for="Institution">Institution:</label>
+                    <input type="text" id="Institution" name="Institution" class="form-control" placeholder="Enter Institution">
+                </div>
+       
+        <div class="form-group">
+            <label for="title">Title:</label>
+            <input type="text" id="title" name="Title" class="form-control" placeholder="Enter Title">
+        </div>
+                        <div class="form-group">
+                    <label for="StartDate">Start Date:</label>
+                    <input type="date" id="StartDate" name="StartDate" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                    <label for="FinishDate">Finish Date:</label>
+                    <input type="date" id="FinishDate" name="FinishDate" class="form-control">
+                      
+                      
+                        <div class="form-group">
+                        <label for="Description">Description:</label>
+                        <textarea id="Description" name="Description" class="form-control" placeholder="Enter Description"></textarea>
+                        </div>
+                        <!-- Add other fields as needed -->
+                        <button type="submit" class="btn btn-primary">Add Work Experience</button>
+                    </form>
+          
+            <p><strong>Work Experience for the User:</strong> </p>
+            @if (ViewBag.WorkExperiences != null && ViewBag.WorkExperiences.Count > 0)
+            {
+                <div class="table-responsive">
+                    <table class="table table-bordered" style="background-color: #f8f9fa;">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th>Institution</th>
+                                <th>Title</th>
+                                <th>Start Date</th>
+                                <th>Finish Date</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var experience in ViewBag.WorkExperiences)
+                            {
+                                <tr>
+                                    <td>@experience.Institution</td>
+                                    <td>@experience.Title</td>
+                                    <td>@experience.StartDate.ToShortDateString()</td>
+                                    <td>@experience.FinishDate.ToShortDateString()</td>
+                                  <td>
+                                        <form method="post" action="/People/DeleteWorkExperience" onsubmit="return confirm('Are you sure you want to delete this skill?');" style="display: inline;">
+                                            <input type="hidden" name="SkillID" value="@experience.UserWorksID" />
+                                            <button type="submit" class="btn btn-sm btn-danger" title="Delete"><i class="fas fa-times"></i>Delete</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <p>No work experience added for the user.</p>
+            }
+
+
+           
+
+        <form method="post" action="/People/AddLanguage" class="my-4">
+            <h5>Languages</h5>
+            <div class="form-group">
+                <label for="Name">Language Name:</label>
+                <input type="text" id="Name" name="Name" class="form-control" placeholder="Enter Language Name" required>
             </div>
+            <div class="form-group">
+                <label for="Proficiency">Proficiency:</label>
+                <select id="Proficiency" name="Proficiency" class="form-control" required>
+                    <option value="">Select Proficiency</option>
+                    <option value="Elementary">Elementary</option>
+                    <option value="Limited Working Proficiency">Limited Working Proficiency</option>
+                    <option value="Professional Working Proficiency">Professional Working Proficiency</option>
+                    <option value="Full Professional Proficiency">Full Professional Proficiency</option>
+                    <option value="Native or Bilingual Proficiency">Native or Bilingual Proficiency</option>
+                </select>
+            </div>
+            <!-- Add other fields as needed -->
+            <button type="submit" class="btn btn-primary">Add Language</button>
+
+        </form>
+
+            <p><strong>Languages:</strong> </p>
+            @if (ViewBag.UserLanguages != null && ViewBag.UserLanguages.Count > 0)
+            {
+                <div class="table-responsive" >
+                    <table class="table table-bordered" style="background-color: #f8f9fa;">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th>Language Name</th>
+                                <th>Proficiency</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var language in ViewBag.UserLanguages)
+                            {
+                                <tr>
+                                    <td>@language.Name</td>
+                                    <td>@language.Proficiency</td>
+                                    <td>
+                                        <form method="post" action="/People/DeleteLanguage" onsubmit="return confirm('Are you sure you want to delete this Language?');" style="display: inline;">
+                                            <input type="hidden" name="LanguageID" value="@language.LanguageID" />
+                                            <button type="submit" class="btn btn-sm btn-danger" title="Delete"><i class="fas fa-times"></i>Delete</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <p>No Language added for the user.</p>
+            }
+
+            
+             
+
+                <h5>Education</h5>
+                <form method="post" action="/People/AddSchool" class="my-4">
+                    <h5>Education</h5>
+                    <div class="form-group">
+                        School Name:
+                        <select id="Name" name="Name" class="form-control" required>
+                            <option value="">Select School Name</option>
+                            <option value="Bogazici University">Bogazici University</option>
+                            <option value="Istanbul Technical University">Istanbul Technical University</option>
+                            <option value="Koc University">Koc University</option>
+                            <option value="Sabanci University">Sabanci University</option>
+                            <option value="Middle East Technical University">Middle East Technical University</option>
+                            <option value="Ankara University">Ankara University</option>
+                            <option value="Hacettepe University">Hacettepe University</option>
+                            <option value="Izmir Institute of Technology">Izmir Institute of Technology</option>
+                            <option value="Other">Other</option>
+                            <!-- Add other Istanbul universities as needed -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="Degree">Degree:</label>
+                        <select id="Degree" name="Degree" class="form-control" required>
+                            <option value="">Select Degree</option>
+                            <option value="Associate">Associate</option>
+                            <option value="Bachelor">Bachelor's</option>
+                            <option value="Master">Master's</option>
+                            <option value="Doctorate">Doctorate</option>
+                            <!-- Add other degree options as needed -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="GraduationYear">Graduation Year:</label>
+                        <input type="text" id="GraduationYear" name="GraduationYear" class="form-control" placeholder="Enter Graduation Year" required>
+                    </div>
+                    <!-- Add other fields as needed -->
+                    <button type="submit" class="btn btn-primary">Add School</button>
+                </form>
+            <p><strong>Education History:</strong> </p>
+            @if (ViewBag.UserSchools != null && ViewBag.UserSchools.Count > 0)
+            {
+                <div class="table-responsive">
+                    <table class="table table-bordered" style="background-color: #f8f9fa;">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th>Name</th>
+                                <th>Degree</th>
+                                <th>GraduationYear</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var schools in ViewBag.UserSchools)
+                            {
+                                <tr>
+                                    <td>@schools.Name</td>
+                                    <td>@schools.Degree</td>
+                                    <td>@schools.GraduationYear</td>
+                                    <td>
+                                        <form method="post" action="/People/DeleteSchool" onsubmit="return confirm('Are you sure you want to delete this skill?');" style="display: inline;">
+                                            <input type="hidden" name="UserSchoolID" value="@schools.UserSchoolID" />
+                                            <button type="submit" class="btn btn-sm btn-danger" title="Delete"><i class="fas fa-times"></i>Delete</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <p>No work experience added for the user.</p>
+            }
+
+            </div>
+
+
+            </div>
+         
         </div>
     </div>
 </div>
