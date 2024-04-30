@@ -54,12 +54,35 @@ namespace BitirmeProj.Controllers
             // Retrieve job application IDs for the user using SQL query
             var jobApplicationIds = _context.Applications
                 .Where(a => a.UserID == userId)
-                .Select(a => a.ApplicationID)
+                .Select(a => a.JobID)
                 .ToList();
+
+            var jobNames = _context.JobListings
+    .Where(j => jobApplicationIds.Contains(j.JobID))
+    .ToList();
+
+
+            ViewBag.JobNames = jobNames;
+            var jobs = _context.JobListings
+    .Where(j => jobApplicationIds.Contains(j.JobID))
+    .Join(
+        _context.Users,
+        job => job.PostedBy,
+        user => user.UserID,
+        (job, user) => new
+        {
+            Job = job,
+            PostedBy = user.UserName
+        })
+    .ToList();
+
+            ViewBag.Jobs = jobs;
+
+
             var userJobs = _context.JobListings
         .Where(j => j.PostedBy == userId)
         .ToList();
-           
+            ViewBag.UserJobs = userJobs;
             // Pass job application IDs and job listings to the view using ViewBag
             ViewBag.JobApplicationIds = jobApplicationIds;
      
@@ -91,7 +114,7 @@ namespace BitirmeProj.Controllers
             
 
             // Pass job application IDs to the view using ViewBag
-            var viewModel = new UserProfileViewModel { User = currentUser, JobApplicationIds = jobApplicationIds, CV = cvs};
+            var viewModel = new UserProfileViewModel { User = currentUser, JobApplicationIDs = jobApplicationIds, CV = cvs};
 
             return View(viewModel);
         }

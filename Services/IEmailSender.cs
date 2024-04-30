@@ -1,6 +1,7 @@
-﻿using System.Threading.Tasks;
-using System.Net.Mail;
+﻿using System;
 using System.Net;
+using System.Net.Mail;
+using System.Threading.Tasks;
 
 namespace BitirmeProj.Services
 {
@@ -26,19 +27,32 @@ namespace BitirmeProj.Services
 
         public async Task SendEmailAsync(string email, string subject, string htmlMessage)
         {
-            using (var client = new SmtpClient(_smtpServer, _smtpPort))
+            try
             {
-                client.UseDefaultCredentials = false;
-                client.Credentials = new NetworkCredential(_smtpUsername, _smtpPassword);
-                client.EnableSsl = true;
+                using (var client = new SmtpClient(_smtpServer, _smtpPort))
+                {
+                    client.UseDefaultCredentials = false;
+                    client.Credentials = new NetworkCredential(_smtpUsername, _smtpPassword);
+                    client.EnableSsl = true;
 
-                var message = new MailMessage();
-                message.To.Add(email);
-                message.Subject = subject;
-                message.Body = htmlMessage;
-                message.IsBodyHtml = true;
+                    var mailMessage = new MailMessage
+                    {
+                        From = new MailAddress(_smtpUsername),
+                        Subject = subject,
+                        Body = htmlMessage,
+                        IsBodyHtml = true
+                    };
 
-                await client.SendMailAsync(message);
+                    mailMessage.To.Add(email);
+
+                    await client.SendMailAsync(mailMessage);
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle exception (e.g., logging)
+                Console.WriteLine($"Error while sending email: {ex.Message}");
+                throw;
             }
         }
     }

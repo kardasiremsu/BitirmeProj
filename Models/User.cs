@@ -20,6 +20,8 @@ namespace BitirmeProj.Models
       
         public string Address { get; set; }
         public string? Institution { get; set; }
+        public int? Token {  get; set; }
+        public bool isActive { get; set; }
         public ICollection<CV> CVs { get; set; }
         public ICollection<UserSchool> UserSchools { get; set; }
         public ICollection<UserWork> UserWorks { get; set; }

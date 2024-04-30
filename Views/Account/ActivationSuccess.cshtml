@@ -1,0 +1,21 @@
+﻿@page
+@model BitirmeProj.Models.RegisterViewModel
+@{
+   // ViewData["Title"] = "Activation Success";
+    Layout = "~/Views/Shared/_Layout.cshtml"; // Assuming you have a shared layout
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">Activation Successful</div>
+                <div class="card-body">
+                    <p>Your account has been successfully activated.</p>
+                    <p>You can now <a href="@Url.Action("Login", "Account")">login</a> to your account.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
