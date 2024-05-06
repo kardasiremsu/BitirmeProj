@@ -28,9 +28,15 @@ namespace BitirmeProj.Controllers
             _webHostEnvironment = webHostEnvironment;
             _env = env;
             var cvsDirectory = Path.Combine(env.WebRootPath, "cvs");
+            var profilephotosDirectory = Path.Combine(env.WebRootPath, "profilephotos");
+
             if (!Directory.Exists(cvsDirectory))
             {
                 Directory.CreateDirectory(cvsDirectory);
+            }
+            if (!Directory.Exists(profilephotosDirectory))
+            {
+                Directory.CreateDirectory(profilephotosDirectory);
             }
         }
 
@@ -79,18 +85,58 @@ namespace BitirmeProj.Controllers
             ViewBag.Jobs = jobs;
 
 
-            var userJobs = _context.JobListings
+/*            var userJobs = _context.JobListings
         .Where(j => j.PostedBy == userId)
-        .ToList();
-            ViewBag.UserJobs = userJobs;
+        .ToList();*/
+          //  ViewBag.UserJobs = userJobs;
             // Pass job application IDs and job listings to the view using ViewBag
             ViewBag.JobApplicationIds = jobApplicationIds;
      
             var userSkillIDs = _context.UserSkills
         .Where(a => a.UserID == userId)
         .ToList();
+            /*
+                        var userJobs = _context.JobListings
+                 .Where(j => j.PostedBy == userId) // Sadece belirli bir kullanıcı tarafından yayınlanan işleri seç
+                 .Join(_context.Applications, // JobListings ve Applications tablolarını birleştir
+                     job => job.JobID,
+                     app => app.JobID,
+                     (job, app) => new
+                     {
+                         JobID = job.JobID,
+                         JobTitle = job.JobTitle,
+                         ApplicantID = app.UserID
+                     })
+                 .Join(_context.Users, // Applications ve Users tablolarını birleştir
+                     joined => joined.ApplicantID,
+                     user => user.UserID,
+                     (joined, user) => new
+                     {
+                         JobID = joined.JobID,
+                         JobTitle = joined.JobTitle,
+                         ApplicantName = user.FirstName + " " + user.LastName,
+                         ApplicantEmail = user.Email
+                         // Users tablosundan diğer özellikleri gerekiyorsa ekleyin
+                     })
+                 .ToList();
 
-          
+                        */
+            var userJobs = _context.JobListings
+                .Where(j => j.PostedBy == userId) // Yalnızca belirli bir kullanıcı tarafından yayınlanan iş ilanlarını al
+                .Select(j => new
+                {
+                    JobID = j.JobID,
+                    JobTitle = j.JobTitle
+                    // Diğer iş ilanı özelliklerini ekleyebilirsiniz
+                })
+                .ToList();
+
+
+            ViewBag.UserJobs = userJobs;
+
+
+
+
 
             ViewBag.UserSkills = userSkillIDs;
             var WorkExperienceIDs = _context.UserWorks
@@ -117,6 +163,42 @@ namespace BitirmeProj.Controllers
             var viewModel = new UserProfileViewModel { User = currentUser, JobApplicationIDs = jobApplicationIds, CV = cvs};
 
             return View(viewModel);
+        }
+
+
+        public IActionResult ShowApplicants(int jobId)
+        {
+            System.Diagnostics.Debug.WriteLine("showww ");
+            System.Diagnostics.Debug.WriteLine(jobId);
+            var applicants = _context.Applications
+        .Include(a => a.User)
+        .Include(a => a.JobListing) // İş ilanı bilgilerini dahil et
+        .Where(a => a.JobID == jobId)
+        .Select(a => new ApplicantViewModel
+        {
+            ApplicantName = a.User.FirstName + " " + a.User.LastName,
+            ApplicantEmail = a.User.Email,
+            JobTitle = a.JobListing.JobTitle, // İş ilanı başlığını ekle
+                            // Diğer başvuru bilgileri buraya eklenebilir
+        })
+        .ToList();
+            var job = _context.JobListings.FirstOrDefault(j => j.JobID == jobId);
+            if (job == null)
+            {
+                return NotFound();
+            }
+
+            ViewBag.Jobs = job;
+
+
+            System.Diagnostics.Debug.WriteLine("Applicants:");
+            foreach (var applicant in applicants)
+            {
+                System.Diagnostics.Debug.WriteLine($"Name: {applicant.ApplicantName}, Email: {applicant.ApplicantEmail}");
+            }
+            ViewBag.Applicants = applicants;
+
+            return View("_ApplicantsPartial", applicants);
         }
 
         // GET: People/Details/5
@@ -153,6 +235,7 @@ namespace BitirmeProj.Controllers
             if (cv == null)
             {
                 return NotFound();
+
             }
 
             _context.CVs.Remove(cv);
@@ -160,6 +243,74 @@ namespace BitirmeProj.Controllers
 
             return RedirectToAction("Index"); // Redirect to the index page after deletion
         }
+
+        public IActionResult GetApplicants(int jobId)
+        {
+            System.Diagnostics.Debug.WriteLine("GET APPLICANTTSSS");
+
+            System.Diagnostics.Debug.WriteLine("JOBID");
+            System.Diagnostics.Debug.WriteLine(jobId);
+
+            // İlgili iş ilanına başvuranları getir
+            var applicants = _context.Applications
+                .Where(a => a.JobID == jobId)
+                .Join(_context.Users, // Users tablosuyla birleştirme işlemi
+                    app => app.UserID, // Applications tablosundaki UserID ile birleştirme
+                    user => user.UserID, // Users tablosundaki UserID ile birleştirme
+                    (app, user) => new
+                    {
+                        ApplicantName = user.FirstName + " " + user.LastName,
+                        ApplicantEmail = user.Email
+                        // Diğer başvuru bilgilerini de ekleyebilirsiniz
+                    })
+                .ToList();
+            
+            // JSON olarak başvuran bilgilerini döndür
+            return Json(applicants);
+
+        }
+
+        [HttpPost]
+        public IActionResult UploadProfilePhoto(IFormFile photoFile)
+        {
+            if (photoFile != null && photoFile.Length > 0)
+            {
+                try
+                {
+                    var currentUser = _userSessionService.GetCurrentUser(); // Assuming you have a service to get the current user
+                    var user = _context.Users.FirstOrDefault(u => u.UserID == currentUser.UserID);
+
+                    // Set the file path for saving
+                    var filePath = Path.Combine(_webHostEnvironment.WebRootPath, "profilephotos", $"{currentUser.UserID}_{photoFile.FileName}");
+
+                    // Save the profile photo file to the server
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    {
+                        photoFile.CopyTo(fileStream);
+                    }
+
+                    // Update the user's profile photo URL in the database
+                    user.ProfilePhotoURL = $"/profilephotos/{currentUser.UserID}_{photoFile.FileName}";
+                    
+                    _context.SaveChanges();
+
+                    System.Diagnostics.Debug.WriteLine($"Profile photo uploaded successfully");
+
+                    // Redirect to the profile page or any other appropriate page
+                    return RedirectToAction("Index");
+                }
+                catch (Exception ex)
+                {
+                    // Handle exceptions (e.g., file save failure)
+                    System.Diagnostics.Debug.WriteLine($"Error uploading profile photo: {ex.Message}");
+                    return RedirectToAction("Index"); // Redirect back to the profile page
+                }
+            }
+
+            // Handle invalid file or other errors
+            return RedirectToAction("Index"); // Redirect back to the profile page
+        }
+
 
 
         [HttpPost]
@@ -423,7 +574,7 @@ namespace BitirmeProj.Controllers
                 _context.SaveChanges();
 
                 // Eğer başarıyla eklendiyse, başka bir işlem yapabilir veya bir mesaj döndürebilirsiniz
-                return RedirectToAction("Index", "Home"); // Örneğin, ana sayfaya yönlendirme
+                return RedirectToAction("Index"); // Redirect to the index page after deletion
             }
             else
             {
@@ -592,7 +743,7 @@ namespace BitirmeProj.Controllers
                 _context.SaveChanges();
 
                 // Eğer başarıyla eklendiyse, başka bir işlem yapabilir veya bir mesaj döndürebilirsiniz
-                return RedirectToAction("Index", "Home"); // Örneğin, ana sayfaya yönlendirme
+                return RedirectToAction("Index"); // Redirect to the index page after deletion
             }
             else
             {
@@ -683,6 +834,74 @@ namespace BitirmeProj.Controllers
               return View(User);
           }
         */
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditProfileAsync([Bind("UserName,FirstName,LastName,Email,Gender")] User model)
+        {
+            try
+            {
+                User currentUser = _userSessionService.GetCurrentUser();
+                int userId = currentUser.UserID;
+
+                // Retrieve the user information from the database based on the userId
+                var user = _context.Users.FirstOrDefault(u => u.UserID == userId);
+                System.Diagnostics.Debug.WriteLine("EDITTT");
+                System.Diagnostics.Debug.WriteLine(model.UserName);
+                System.Diagnostics.Debug.WriteLine("EDITTT");
+
+                System.Diagnostics.Debug.WriteLine(user.UserName);
+
+
+                if (ModelState.IsValid)
+                {
+                    if (user != null)
+                    {
+                        user.UserName = model.UserName;
+                        user.FirstName = model.FirstName;
+                        user.LastName = model.LastName;
+                        user.Email = model.Email;
+                        user.Gender = model.Gender;
+                        System.Diagnostics.Debug.WriteLine(user.UserName);
+
+                        // Save changes to the database
+                        _context.SaveChanges();
+                        System.Diagnostics.Debug.WriteLine("CHANGED?");
+
+                        System.Diagnostics.Debug.WriteLine(user.UserName);
+
+                        // Update session data with the new user information
+                        HttpContext.Session.SetString("UserName", user.UserName);
+                        HttpContext.Session.SetString("FirstName", user.FirstName);
+                        HttpContext.Session.SetString("LastName", user.LastName);
+                        HttpContext.Session.SetString("Email", user.Email);
+
+                        // Save changes to the session
+                        await HttpContext.Session.CommitAsync();
+
+                        return RedirectToAction("Index", "People");
+                    }
+                    else
+                    {
+                        System.Diagnostics.Debug.WriteLine("here?");
+
+                        ModelState.AddModelError("", "User not found.");
+                    }
+                }
+
+                // If we got this far, something failed, redisplay the form
+                System.Diagnostics.Debug.WriteLine("sorun vvar");
+
+                return RedirectToAction("Index", "People");
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                System.Diagnostics.Debug.WriteLine("An error occurred while editing the profile: " + ex.Message);
+                // You can also handle the error and return a specific view if needed
+                return RedirectToAction("Error", "Home");
+            }
+        }
+
 
         public IActionResult Edit(int ?userId)
         {

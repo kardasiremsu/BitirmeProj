@@ -22,6 +22,9 @@ namespace BitirmeProj.Models
         public string? Institution { get; set; }
         public int? Token {  get; set; }
         public bool isActive { get; set; }
+
+        public string? ProfilePhotoURL { get; set; } // Add this property for the profile photo URL
+
         public ICollection<CV> CVs { get; set; }
         public ICollection<UserSchool> UserSchools { get; set; }
         public ICollection<UserWork> UserWorks { get; set; }

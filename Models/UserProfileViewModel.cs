@@ -8,6 +8,7 @@
         public List<Skill>? Skill { get; set; }
         public List<School>? School { get; set; }
         public List<UserSkill>? UserSkill { get; set; }
+        public string ProfilePhotoURL { get; set; }
 
     }
 }

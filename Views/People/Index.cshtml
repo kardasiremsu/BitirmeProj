@@ -22,7 +22,7 @@
 
         .profile-photo {
             width: 200px;
-            height: 200px;
+            height: auto;
             border-radius: 50%;
             margin-right: 20px;
         }
@@ -63,15 +63,25 @@
 <div class="container profile-container">
     <div class="row">
         <div class="col-md-4">
-            <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" alt="Profile Photo" class="profile-photo">
+            <img src="@(Model.User.ProfilePhotoURL)"  class="profile-photo">
 
+            <form method="post" enctype="multipart/form-data" action="/People/UploadProfilePhoto">
+                <div class="form-group">
+                    <label for="photoFile"></label>
+                    <input type="file" class="form-control-file" id="photoFile" name="photoFile" accept="image/*" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Upload Photo</button>
+            </form>
         </div>
         <div class="col-md-8">
             <h2> @Model.User.FirstName  @Model.User.LastName</h2>
             <h4>   @Model.User.Institution - @Model.User.Title</h4>
            <div id="profileInfo">
 
-                <button id="editProfileBtn" class="btn btn-light">Edit Profile</button>
+                <!--<button id="editProfileBtn" class="btn btn-light">Edit Profile</button>-->
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#editProfileModal">
+                    Edit Profile
+                </button>
                 <br /><br />
             <div id="profileDetails" class="profile-details">
 
@@ -88,50 +98,116 @@
              
             </div>
 
-
            
         </div>
+        <!-- Modal -->
+        <div class="modal fade" id="editProfileModal" tabindex="-1" role="dialog" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editProfileModalLabel">Edit Profile</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Editable fields will be displayed here -->
+                        <form id="editForm" method="post" action="/People/EditProfile" class="my-4">
+                            @Html.AntiForgeryToken()
 
-        <div id="editProfileForm" style="display: none;">
-            <!-- Editable fields will be displayed here -->
-            <form id="editForm">
-                @Html.AntiForgeryToken()
+                            @Html.HiddenFor(model => model.User.UserID)
+                            @Html.HiddenFor(model => model.User.UserType)
+                            @Html.HiddenFor(model => model.User.Password)
+                            @Html.HiddenFor(model => model.User.Title)
+                            @Html.HiddenFor(model => model.User.Phone)
+                            @Html.HiddenFor(model => model.User.Address)
+                            @Html.HiddenFor(model => model.User.Institution)
+                            @Html.HiddenFor(model => model.User.Token)
+                            @Html.HiddenFor(model => model.User.isActive)
 
-                <div class="form-group">
-                    <label for="UserName">Username</label>
-                    <input type="text" class="form-control" id="UserName" name="UserName" value="@Model.User.UserName" required>
+                            <div class="form-group">
+                                <label for="UserName">Username</label>
+                                <input type="text" class="form-control" id="UserName" name="UserName" value="@Model.User.UserName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="FirstName">First Name</label>
+                                <input type="text" class="form-control" id="FirstName" name="FirstName" value="@Model.User.FirstName" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="LastName">Last Name</label>
+                                <input type="text" class="form-control" id="LastName" name="LastName" value="@Model.User.LastName" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="Email">Email</label>
+                                <input type="email" class="form-control" id="Email" name="Email" value="@Model.User.Email" required>
+                            </div>
+
+
+                            <div class="form-group">
+                                <label for="Gender">Gender</label>
+                                <select class="form-control" id="Gender" name="Gender" required>
+                                    <option value="">Select Gender</option>
+                                    <option value="0">Female</option>
+                                    <option value="1">Male</option>
+                                    <option value="2">Other</option>
+                                </select>
+                            </div>
+                            <!-- Add other editable fields -->
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="cancelEditBtn" type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button id="saveProfileBtn" type="button" class="btn btn-primary">Save</button>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="FirstName">First Name</label>
-                    <input type="text" class="form-control" id="FirstName" name="FirstName" value="@Model.User.FirstName" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="LastName">Last Name</label>
-                    <input type="text" class="form-control" id="LastName" name="LastName" value="@Model.User.LastName" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="Email">Email</label>
-                    <input type="email" class="form-control" id="Email" name="Email" value="@Model.User.Email" required>
-                </div>
-
-
-                <div class="form-group">
-                    <label for="Gender">Gender</label>
-                    <select class="form-control" id="Gender" name="Gender" required>
-                        <option value="">Select Gender</option>
-                        <option value="0">Female</option>
-                        <option value="1">Male</option>
-                        <option value="2">Other</option>
-                    </select>
-                </div>
-                <!-- Add other editable fields -->
-                <button id="cancelEditBtn" type="button" class="btn btn-secondary">Cancel</button>
-
-                <button id="saveProfileBtn" type="button" class="btn btn-primary">Save</button>
-            </form>
+            </div>
         </div>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                var saveBtn = document.getElementById("saveProfileBtn");
+                var editForm = document.getElementById("editForm");
+
+                saveBtn.addEventListener("click", function () {
+                    editForm.submit();
+                });
+
+                // Form gönderildikten sonra işlemler
+                editForm.addEventListener("submit", function (event) {
+                    event.preventDefault(); // Sayfanın yeniden yüklenmesini engelle
+
+                    // Formun gönderilmesi
+                    fetch(editForm.action, {
+                        method: editForm.method,
+                        body: new FormData(editForm),
+                        headers: {
+                            "RequestVerificationToken": '@Html.AntiForgeryToken()'
+                        }
+                    })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            // Başarılı yanıt geldiğinde yapılacak işlemler
+                            console.log(data);
+                            $('#editProfileModal').modal('hide'); // Modal'ı kapat
+                            location.reload(); // Sayfayı yenile
+                        })
+                        .catch(error => {
+                            // Hata durumunda yapılacak işlemler
+                            console.error('There has been a problem with your fetch operation:', error);
+                        });
+                });
+            });
+        </script>
+
+
+
+        </script>
                 <div class="user-info-lists border p-3">
                     <h4 class="mb-4">Upload CV</h4>
                     <form method="post" enctype="multipart/form-data" action="/People/UploadCV">
@@ -220,27 +296,69 @@
             }
                 
                 <p><strong>Job Posted by the User:</strong> </p>
-           
-                    @if (ViewBag.UserJobs != null && ViewBag.UserJobs.Count > 0)
+
+            @if (ViewBag.UserJobs != null && ViewBag.UserJobs.Count > 0)
+            {
+                <div class="row">
+                    @foreach (var job in ViewBag.UserJobs)
                     {
-                        <div class="row">
-                            @foreach (var job in ViewBag.UserJobs)
-                            {
-                                <div class="col-md-4 mb-4">
-                                    <div class="card">
-                                        <div class="card-body">
-                                            <h5 class="card-title">@job.JobTitle</h5>
-                                            <!-- Display other job details as needed -->
-                                        </div>
-                                    </div>
+                        <div class="col-md-4 mb-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">@job.JobTitle</h5>
+                                    <button type="button" class="btn btn-primary" onclick="showApplicants('@job.JobID')">View Applicants</button>
                                 </div>
-                            }
+                            </div>
                         </div>
                     }
-                    else
-                    {
-                        <p>No jobs posted by this user.</p>
+                </div>
+            }
+            else
+            {
+                <p>No jobs found.</p>
+            }
+
+            <!-- Modal for displaying applicants -->
+            <div class="modal fade" id="applicantModal" tabindex="-1" role="dialog" aria-labelledby="applicantModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="applicantModalLabel">Applicants</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Email</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="applicantTableBody">
+                                        <!-- Applicants will be loaded here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @section Scripts {
+                <script>
+                    function showApplicants(jobId) {
+                        var url = '/People/ShowApplicants?jobId=' + jobId;
+                        window.location.href = url; // Redirect to the URL
                     }
+                </script>
+            }
+
 
          
 
@@ -585,49 +703,7 @@
 <!-- Bootstrap JS (jQuery must be included before Bootstrap JS) -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-@section Scripts {
-    <script>
-        // Function to switch between view and edit mode
-        function toggleEditMode(edit) {
-            if (edit) {
-                $('#profileInfo').hide();
-                $('#editProfileForm').show();
-            } else {
-                $('#profileInfo').show();
-                $('#editProfileForm').hide();
-            }
-        }
 
-        // Initial state: Display profile details in read-only mode
-        toggleEditMode(false);
-
-        // Handle click event on Edit button
-        $('#editProfileBtn').click(function () {
-            toggleEditMode(true);
-        });
-        $('#cancelEditBtn').click(function () {
-            // Reload the page to show the same profile
-            location.reload();
-        });
-        // Handle click event on Save button
-        $('#saveProfileBtn').click(function () {
-            var formData = $('#editForm').serialize();
-            $.ajax({
-                url: '/People/Update',
-                method: 'POST',
-                data: formData,
-                success: function () {
-                    // If update is successful, switch back to view mode
-                    toggleEditMode(false);
-                },
-                error: function () {
-                    // Handle error if update fails
-                    alert('Failed to update profile.');
-                }
-            });
-        });
-    </script>
-}
         </div>
 
     </div>
