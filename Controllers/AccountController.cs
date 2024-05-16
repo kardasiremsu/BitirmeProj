@@ -141,7 +141,8 @@ namespace BitirmeProj.Controllers
 
                 var mailMessage = new MailMessage();
                 mailMessage.To.Add(model.Email);
-                mailMessage.From = new MailAddress("thesisproject2604@hotmail.com");
+                //   mailMessage.From = new MailAddress("thesisproject2604@hotmail.com");
+                mailMessage.From = new MailAddress("kardas18@itu.edu.tr");
 
                 mailMessage.Subject = "Test Subject";
                 // Token ile birlikte aktivasyon bağlantısı gönder
@@ -149,11 +150,17 @@ namespace BitirmeProj.Controllers
 
                 SmtpClient smtpClient = new SmtpClient();
                // smtpClient.UseDefaultCredentials = false;
-
+               /*
                 smtpClient.Credentials = new NetworkCredential("thesisproject2604@hotmail.com", "thesisproject1!");
+              
                 smtpClient.Port = 587; // Gmail SMTP port
                 smtpClient.Host = "smtp-mail.outlook.com";
-                smtpClient.EnableSsl = true;     // Enable SSL/TLS
+                */
+                smtpClient.Credentials = new NetworkCredential("kardas18@itu.edu.tr", "ITUdeson2!");
+
+                smtpClient.Port = 587; // Gmail SMTP port
+                smtpClient.Host = "smtp.itu.edu.tr";
+                smtpClient.EnableSsl = false;     // Enable SSL/TLS
                 System.Diagnostics.Debug.WriteLine("153");
 
 

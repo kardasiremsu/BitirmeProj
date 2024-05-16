@@ -16,7 +16,6 @@
 
   <ItemGroup>
     <Folder Include="Javascripts\" />
-    <Folder Include="Views\Shared\" />
     <Folder Include="wwwroot\images\" />
     <Folder Include="wwwroot\lib\bootstrap\" />
     <Folder Include="wwwroot\lib\bootstrap\dist\js\" />

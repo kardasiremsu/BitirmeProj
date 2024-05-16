@@ -26,7 +26,12 @@ namespace BitirmeProj.Controllers
             _context = context;
             _userSessionService = userSessionService;
         }
-    
+
+        // JobDescription içinde skill geçiyorsa true, yoksa false döndüren fonksiyon
+        private bool SkillExistsInJobDescription(string jobDescription, string skill)
+        {
+            return jobDescription.Contains(skill);
+        }
 
         public async Task<IActionResult> Index(string sortOrder, string searchTerm, int? experienceLevel, string jobLocation, int? jobType)
         {
@@ -72,9 +77,51 @@ namespace BitirmeProj.Controllers
             }
 
             User currentUser = _userSessionService.GetCurrentUser();
+            // Get the current user's skills
+         /*   var currentUserSkills = _context.UserSkills
+                .Where(us => us.UserID == currentUser.UserID)
+                .Select(us => us.Name) // Bu kısım değişti
+                .ToList();
 
-            // Pass user data to the view
-            ViewBag.CurrentUser = currentUser;
+            System.Diagnostics.Debug.WriteLine("User Skill:");
+
+            foreach (var skill in currentUserSkills)
+            {
+                System.Diagnostics.Debug.WriteLine("User Skill: " + skill);
+            }
+
+            // İş ilanlarını veritabanından çekmeden önce sadece becerilere göre filtreleme yapalım
+            var skillRelatedJobs = jobs.ToList().Where(j => currentUserSkills.Any(skill => j.JobDescription.Contains(skill)));
+
+            // Tüm iş ilanlarını çekelim
+            var allJobs = await jobs.AsNoTracking().ToListAsync();
+
+            // Diğer iş ilanlarından skillRelatedJobs içinde olmayanları alalım
+            var otherJobs = allJobs.Except(skillRelatedJobs);
+
+            // Skill related iş ilanlarını en üste getirelim ve geri kalanlarla birleştirelim
+            var combinedJobs = skillRelatedJobs.Concat(otherJobs);
+
+            // Geri kalan işlemleri uygulayalım (örneğin, sıralama)
+            switch (sortOrder)
+            {
+                case "titleDesc":
+                    combinedJobs = combinedJobs.OrderByDescending(j => j.JobTitle);
+                    break;
+                case "date":
+                    combinedJobs = combinedJobs.OrderBy(j => j.JobCreatedDate);
+                    break;
+                case "dataDesc":
+                    combinedJobs = combinedJobs.OrderByDescending(j => j.JobCreatedDate);
+                    break;
+                default:
+                    combinedJobs = combinedJobs.OrderBy(j => j.JobTitle);
+                    break;
+            }
+
+          */
+        // Pass user data to the view
+        ViewBag.CurrentUser = currentUser;
             return View(await jobs.AsNoTracking().ToListAsync());
         }
 
@@ -131,6 +178,33 @@ namespace BitirmeProj.Controllers
         }
 
 
+        [HttpGet]
+        public IActionResult SkillRelatedJobs()
+        {
+            // Get the current user (you need to implement your own logic to get the current user)
+            User currentUser = _userSessionService.GetCurrentUser();
+            if (currentUser != null)
+            {
+                // Get user's skills
+                var userSkills = _context.UserSkills
+               .Where(us => us.UserID == currentUser.UserID)
+               .Join(_context.Skills,
+                   us => us.SkillID,
+                   s => s.SkillID,
+                   (us, s) => s.Name)
+               .ToList();
+                // Get job listings where the description contains at least one of the user's skills
+                var skillRelatedJobs = _context.JobListings
+                    .Where(j => userSkills.Any(skill => j.JobDescription.Contains(skill)))
+                    .ToList();
+
+                // Redirect to the home page with the filtered job listings
+                return RedirectToAction("Index", "Home", new { skillRelatedJobs });
+            }
+
+            // If user is not logged in or has no skills, redirect to the home page
+            return RedirectToAction("Index", "Home");
+        }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

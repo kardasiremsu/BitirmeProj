@@ -32,6 +32,8 @@
                         <tr>
                             <th>Name</th>
                             <th>Email</th>
+                            <th>Profile</th>
+                            <th>LinkedIn</th>
                             <!-- Other applicant information fields can be added here -->
                         </tr>
                     </thead>
@@ -41,6 +43,23 @@
                             <tr>
                                 <td>@applicant.ApplicantName</td>
                                 <td>@applicant.ApplicantEmail</td>
+                                <td>
+                                    <a href="@Url.Action("Index", "People", new { userId = applicant.ApplicantID })">@applicant.ApplicantName</a>
+                                </td>
+                                 <td>
+                                    @if (!string.IsNullOrEmpty(applicant.ApplicantLinkedin))
+                                    {
+                                        <a href="@applicant.ApplicantLinkedin" target="_blank">
+                                            <img src="/images/linkedin-logo.png" alt="Linkedin" style="width: 35px; height: 35px; vertical-align: middle;" />
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <span>There is no LinkedIn account connected</span>
+                                    }
+
+                                </td>  
+
                                 <!-- Other applicant information fields can be added here -->
                             </tr>
                         }

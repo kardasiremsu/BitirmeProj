@@ -43,8 +43,17 @@ namespace BitirmeProj.Controllers
         // GET: People
         public IActionResult Index(int userId)
         {
+            System.Diagnostics.Debug.WriteLine("USER ID");
+            System.Diagnostics.Debug.WriteLine(userId);
             User currentUser = _userSessionService.GetCurrentUser();
-            userId = (int)currentUser.UserID;
+
+            if (userId == null || userId == 0)
+            {
+                System.Diagnostics.Debug.WriteLine("girdi");
+
+                userId = (int)currentUser.UserID;
+            }
+         
 
             // Retrieve the user information from the database based on the userId
             var user = _context.Users.FirstOrDefault(u => u.UserID == userId);
@@ -155,12 +164,12 @@ namespace BitirmeProj.Controllers
        .ToList();
 
 
-
+            ViewBag.CurrentUser = currentUser;
             ViewBag.UserSchools = userSchoolsID;
             
 
             // Pass job application IDs to the view using ViewBag
-            var viewModel = new UserProfileViewModel { User = currentUser, JobApplicationIDs = jobApplicationIds, CV = cvs};
+            var viewModel = new UserProfileViewModel { User = user, JobApplicationIDs = jobApplicationIds, CV = cvs};
 
             return View(viewModel);
         }
@@ -168,16 +177,17 @@ namespace BitirmeProj.Controllers
 
         public IActionResult ShowApplicants(int jobId)
         {
-            System.Diagnostics.Debug.WriteLine("showww ");
-            System.Diagnostics.Debug.WriteLine(jobId);
             var applicants = _context.Applications
         .Include(a => a.User)
         .Include(a => a.JobListing) // İş ilanı bilgilerini dahil et
         .Where(a => a.JobID == jobId)
         .Select(a => new ApplicantViewModel
         {
+
+            ApplicantID = a.UserID,
             ApplicantName = a.User.FirstName + " " + a.User.LastName,
             ApplicantEmail = a.User.Email,
+            ApplicantLinkedin = a.User.Linkedin,
             JobTitle = a.JobListing.JobTitle, // İş ilanı başlığını ekle
                             // Diğer başvuru bilgileri buraya eklenebilir
         })
@@ -191,11 +201,6 @@ namespace BitirmeProj.Controllers
             ViewBag.Jobs = job;
 
 
-            System.Diagnostics.Debug.WriteLine("Applicants:");
-            foreach (var applicant in applicants)
-            {
-                System.Diagnostics.Debug.WriteLine($"Name: {applicant.ApplicantName}, Email: {applicant.ApplicantEmail}");
-            }
             ViewBag.Applicants = applicants;
 
             return View("_ApplicantsPartial", applicants);
@@ -243,6 +248,36 @@ namespace BitirmeProj.Controllers
 
             return RedirectToAction("Index"); // Redirect to the index page after deletion
         }
+
+
+
+
+        [HttpPost]
+        public IActionResult DeleteJobs(int JobID)
+        {
+            // İlgili iş ilanını bul
+            var job = _context.JobListings.Find(JobID);
+            if (job == null)
+            {
+                return NotFound();
+            }
+
+            // İş ilanını sil
+            _context.JobListings.Remove(job);
+
+            // İlgili başvuruları bul
+            var applications = _context.Applications.Where(a => a.JobID == JobID);
+
+            // Başvuruları sil
+            _context.Applications.RemoveRange(applications);
+
+            // Değişiklikleri veritabanına uygula
+            _context.SaveChanges();
+
+            // Index sayfasına yönlendir (veya uygun bir başka sayfaya)
+            return RedirectToAction("Index");
+        }
+
 
         public IActionResult GetApplicants(int jobId)
         {
@@ -836,7 +871,7 @@ namespace BitirmeProj.Controllers
         */
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditProfileAsync([Bind("UserName,FirstName,LastName,Email,Gender")] User model)
+        public async Task<IActionResult> EditProfileAsync([Bind("UserName,FirstName,LastName,Email,Gender,Phone,Address,Institution,Title,Linkedin")] User model)
         {
             try
             {
@@ -852,8 +887,7 @@ namespace BitirmeProj.Controllers
                 System.Diagnostics.Debug.WriteLine(user.UserName);
 
 
-                if (ModelState.IsValid)
-                {
+
                     if (user != null)
                     {
                         user.UserName = model.UserName;
@@ -861,6 +895,11 @@ namespace BitirmeProj.Controllers
                         user.LastName = model.LastName;
                         user.Email = model.Email;
                         user.Gender = model.Gender;
+                    user.Address = model.Address;
+                    user.Phone = model.Phone;
+                    user.Institution = model.Institution;
+                    user.Title = model.Title;
+                    user.Linkedin = model.Linkedin;
                         System.Diagnostics.Debug.WriteLine(user.UserName);
 
                         // Save changes to the database
@@ -869,14 +908,14 @@ namespace BitirmeProj.Controllers
 
                         System.Diagnostics.Debug.WriteLine(user.UserName);
 
-                        // Update session data with the new user information
+                      /*  // Update session data with the new user information
                         HttpContext.Session.SetString("UserName", user.UserName);
                         HttpContext.Session.SetString("FirstName", user.FirstName);
                         HttpContext.Session.SetString("LastName", user.LastName);
                         HttpContext.Session.SetString("Email", user.Email);
-
+                      
                         // Save changes to the session
-                        await HttpContext.Session.CommitAsync();
+                        await HttpContext.Session.CommitAsync();*/
 
                         return RedirectToAction("Index", "People");
                     }
@@ -886,7 +925,7 @@ namespace BitirmeProj.Controllers
 
                         ModelState.AddModelError("", "User not found.");
                     }
-                }
+                
 
                 // If we got this far, something failed, redisplay the form
                 System.Diagnostics.Debug.WriteLine("sorun vvar");

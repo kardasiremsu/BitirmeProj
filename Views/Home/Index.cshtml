@@ -8,6 +8,7 @@
 
 @{
     ViewData["Title"] = "Home Page";
+    
 
 }
 
@@ -126,6 +127,10 @@
                     </section>
                     <section class="filter-section">
                         <h4>Filter Jobs</h4>
+                        <button id="skillButton" class="btn btn-secondary">Show Skill-Related Jobs</button>
+
+
+
                         <form asp-action="Index" method="get">
                             <div class="form-group">
                                 <label for="experienceLevel">Experience Level</label>
@@ -164,9 +169,12 @@
                             </div>
                             <button type="submit" class="btn btn-secondary">Filter</button>
                         </form>
+                        <br />
+                      
                     </section>
 
                 </div>
+
                 <div class="col-md-9">
                     <div class="container">
                         <form asp-action="Index" method="get">
@@ -203,6 +211,7 @@
                         <div class="col-md-12">
                             <h5> @Model.Count() jobs are found.</h5>
                         </div>
+
                         @foreach (var item in Model)
                         {
                             User currentUser = ViewBag.CurrentUser;
