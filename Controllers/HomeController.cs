@@ -33,7 +33,7 @@ namespace BitirmeProj.Controllers
             return jobDescription.Contains(skill);
         }
 
-        public async Task<IActionResult> Index(string sortOrder, string searchTerm, int? experienceLevel, string jobLocation, int? jobType)
+        public async Task<IActionResult> Index(string sortOrder, string searchTerm, int? experienceLevel, string jobLocation, int? jobType, int page = 1, int pageSize = 10)
         {
             var jobs = from j in _context.JobListings select j;
 
@@ -122,8 +122,19 @@ namespace BitirmeProj.Controllers
           */
         // Pass user data to the view
         ViewBag.CurrentUser = currentUser;
-            return View(await jobs.AsNoTracking().ToListAsync());
+            var totalJobsCount = await jobs.CountAsync();
+            ViewData["TotalJobsCount"] = totalJobsCount;
+
+            //  return View(await jobs.AsNoTracking().ToListAsync());
+            var paginatedJobs = await jobs.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+                return PartialView("_JobListing", paginatedJobs);
+            }
+            return View(paginatedJobs);
         }
+      
+
 
         public IActionResult CreateApplication()
         {
@@ -161,7 +172,17 @@ namespace BitirmeProj.Controllers
                 return StatusCode(500, $"An error occurred while creating the application: {ex.Message}");
             }
         }
+        [HttpGet]
+        public IActionResult LoadJobs(int page = 1, int pageSize = 10)
+        {
+            var jobs = _context.JobListings
+                               .OrderBy(j => j.ApplicationDeadline)
+                               .Skip((page - 1) * pageSize)
+                               .Take(pageSize)
+                               .ToList();
 
+            return PartialView("_JobList", jobs);
+        }
         public IActionResult Privacy()
         {
             return View();

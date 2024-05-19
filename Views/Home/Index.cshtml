@@ -127,7 +127,7 @@
                     </section>
                     <section class="filter-section">
                         <h4>Filter Jobs</h4>
-                        <button id="skillButton" class="btn btn-secondary">Show Skill-Related Jobs</button>
+                      
 
 
 
@@ -209,75 +209,66 @@
                      
                      
                         <div class="col-md-12">
-                            <h5> @Model.Count() jobs are found.</h5>
+                        <h5>@ViewData["TotalJobsCount"] jobs are found.</h5>
                         </div>
 
-                        @foreach (var item in Model)
-                        {
-                            User currentUser = ViewBag.CurrentUser;
-                            var userId = User.Identity.Name;
+                        <div id="job-container">
+    @Html.Partial("_JobListing", Model)
+</div>
 
-
-                            var postedByFullName = UserService.GetUserFullName(item.PostedBy, _context); // Assuming _context is available in your Razor view or controller
-                            bool postedByCurrentUser = false;
-
-                           
-                            if (item.PostedBy == currentUser.UserID)
-                            {
-                                postedByCurrentUser = true;
-                            }
-                          
-                            <div class="job-card">
-                                <p><strong>Posted By:</strong> @postedByFullName</p>
-                                <h2>@Html.DisplayFor(modelItem => item.JobTitle)</h2>
-                                <p><strong>Location:</strong> @Html.DisplayFor(modelItem => item.JobLocation)</p>
-                                <p><strong>Application Deadline:</strong> @Html.DisplayFor(modelItem => item.ApplicationDeadline)</p>
-
-                                <div class="job-details">
-                                    <p><strong>Description:</strong></p>
-                                    <div class="description-limit">
-                                        @Html.Raw(item.JobDescription)
-                                    </div>
-                                    <p class="read-more-btn">Read More</p>
-                                </div>
-                               
-                                    @if (postedByCurrentUser)
-                                    {
-                                        <button type="button" class="btn btn-primary" onclick="editJob(@item.JobID)">Edit</button>
-                                    }
-                                    <form id="applyForm" method="post" action="/Home/CreateApplication">
-                                        <input type="hidden" id="jobID" name="jobID" value="">
-                                    </form>
-                                    @if (!postedByCurrentUser)
-                                    {
-                                        <button type="button" class="btn btn-success" onclick="applyJob('@item.JobID')">Apply</button>
-
-                                    }
-                                
-
-                                <!--   <a class="read-more-btn">Read More</a>
-                                    <button type="button" class="btn btn-primary" onclick="viewJobDetails({
-                                    jobID: '@item.JobID',
-                                    jobTitle: '@Html.Raw(item.JobTitle)',
-                                    jobLocation: '@Html.Raw(item.JobLocation)',
-                                    jobType: '@item.JobType',
-                                    applicationDeadline: '@item.ApplicationDeadline',
-                                    experienceLevel: '@item.ExperienceLevel',
-                                    salary: '@item.Salary',
-                                    salaryCurrency: '@item.SalaryCurrency'
-                                })">
-                                        View Job Details
-                                    </button>-->
-                            </div>
-
-                        }
+                    <div id="loading" style="display: none; text-align: center; padding: 20px;">
+                        <img src="~/images/loading.gif" alt="Loading..." style="width: 60px; height: 60px;" />
+                      
                     </div>
-                </div>
-            </div>
-        
+                    @section Scripts {
+                        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+                        <script type="text/javascript">
+                            $(document).ready(function () {
+                                var page = 1;
+                                var loading = false;
 
-        </div>
+                                function loadMoreJobs() {
+                                    if (loading) return;
+                                    loading = true;
+                                    $('#loading').show();
 
+                                    setTimeout(function () { // Add a delay of 5 seconds (5000 milliseconds)
+                                        $.ajax({
+                                            url: '@Url.Action("Index", "Home")',
+                                            data: {
+                                                sortOrder: '@ViewData["TitleSortParam"]',
+                                                searchTerm: '@ViewData["searchTerm"]',
+                                                experienceLevel: '@ViewData["experienceLevel"]',
+                                                jobLocation: '@ViewData["jobLocation"]',
+                                                jobType: '@ViewData["jobType"]',
+                                                page: page + 1,
+                                                pageSize: 10
+                                            },
+                                            success: function (data) {
+                                                if (data.trim().length > 0) {
+                                                    $('#job-container').append(data);
+                                                    page++;
+                                                }
+                                                $('#loading').hide();
+                                                loading = false;
+                                            },
+                                            error: function () {
+                                                $('#loading').hide();
+                                                loading = false;
+                                            }
+                                        });
+                                    }, 1000); // 5000 milliseconds = 5 seconds
+                                }
+
+                                $(window).scroll(function () {
+                                    if ($(window).scrollTop() + $(window).height() >= $(document).height() - 100) {
+                                        loadMoreJobs();
+                                    }
+                                });
+                            });
+                        </script>
+                    }
+                     
         <script>
             function applyJob(jobID) {
                 

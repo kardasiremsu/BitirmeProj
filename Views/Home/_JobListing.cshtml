@@ -1,0 +1,46 @@
+﻿@using BitirmeProj.Data
+@using BitirmeProj.Utilities
+@using System.Security.Claims
+@using BitirmeProj.Services;
+
+
+@model IEnumerable<BitirmeProj.Models.JobListing>
+
+
+@{
+    User currentUser = ViewBag.CurrentUser;
+}
+@inject ApplicationDBContext _context // Inject ApplicationDBContext into the view
+
+@foreach (var item in Model)
+{
+    var postedByFullName = UserService.GetUserFullName(item.PostedBy, _context);
+    bool postedByCurrentUser = item.PostedBy == currentUser.UserID;
+
+    <div class="job-card">
+        <p><strong>Posted By:</strong> @postedByFullName</p>
+        <h2>@Html.DisplayFor(modelItem => item.JobTitle)</h2>
+        <p><strong>Location:</strong> @Html.DisplayFor(modelItem => item.JobLocation)</p>
+        <p><strong>Application Deadline:</strong> @Html.DisplayFor(modelItem => item.ApplicationDeadline)</p>
+
+        <div class="job-details">
+            <p><strong>Description:</strong></p>
+            <div class="description-limit">
+                @Html.Raw(item.JobDescription)
+            </div>
+            <p class="read-more-btn">Read More</p>
+        </div>
+
+        @if (postedByCurrentUser)
+        {
+            <button type="button" class="btn btn-primary" onclick="editJob(@item.JobID)">Edit</button>
+        }
+        <form id="applyForm" method="post" action="/Home/CreateApplication">
+            <input type="hidden" id="jobID" name="jobID" value="">
+        </form>
+        @if (!postedByCurrentUser)
+        {
+            <button type="button" class="btn btn-success" onclick="applyJob('@item.JobID')">Apply</button>
+        }
+    </div>
+}
