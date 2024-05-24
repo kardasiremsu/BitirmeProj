@@ -283,7 +283,7 @@
                     <button style="margin-top: 8px;" class="btn btn-success" type="submit">Upload CV</button>
                 </form>
             }
-            <h4 class="mt-5">Uploaded CVs</h4>
+            <h5 class="mt-5">CVs</h5>
                     <div class="table-responsive">
                 <table class="table table-bordered" style="background-color: #f8f9fa;">
                             <thead>
@@ -348,14 +348,19 @@
                             <tr>
                                 <th>Job</th>
                                 <th>Posted By</th>
+                                <th>Application Date</th>
+                                    
                             </tr>
                         </thead>
                         <tbody>
                             @foreach (var job in ViewBag.Jobs)
                             {
                                 <tr>
-                                    <td>@job.Job.JobTitle</td>
+                                    <td>
+                                            <a href="javascript:void(0);" onclick="showJobs('@job.Job.JobID')">@job.Job.JobTitle</a>
+                                        </td>
                                     <td>@job.PostedBy</td>
+                                        <td>@job.ApplicationDate</td>
                                 </tr>
                             }
                         </tbody>
@@ -376,6 +381,7 @@
                             <tr>
                                 <th>Job Title</th>
                                 <th>Action</th>
+                                <th>Creation Date</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -390,6 +396,7 @@
                                             <button type="submit" class="btn btn-sm btn-danger ml-1"><i class="fas fa-times"></i> Delete</button>
                                         </form>
                                     </td>
+                                        <td>@job.JobCreationDate</td>
                                 </tr>
                             }
                         </tbody>
@@ -441,19 +448,20 @@
                         window.location.href = url; // Redirect to the URL
                     }
                 </script>
+
+                <script>
+                    function showJobs(jobId) {
+                        var url = '/People/ShowJobs?jobId=' + jobId;
+                        window.location.href = url; // Redirect to the URL
+                    }
+                </script>
             }
 
 
          
 
-            <h5>Skills:</h5>
-              @if (currentUser.UserID == Model.User.UserID)
-                {
-            <!-- Button to trigger modal -->
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addSkillModal">
-                Add Skill
-            </button>
-                }
+          
+            
             <!-- Modal -->
             <div class="modal fade" id="addSkillModal" tabindex="-1" role="dialog" aria-labelledby="addSkillModalLabel" aria-hidden="true">
                 <div class="modal-dialog" role="document">
@@ -486,8 +494,16 @@
                 </div>
             </div>
 
-            @if (ViewBag.UserSkills != null && ViewBag.UserSkills.Count > 0)
+            @if (ViewBag.UserSkills != null && ViewBag.UserSkills.Count > 0 || currentUser.UserID == Model.User.UserID)
             {
+                <h5>Skills:</h5>
+                @if (currentUser.UserID == Model.User.UserID)
+                {
+                    <!-- Button to trigger modal -->
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addSkillModal">
+                        Add Skill
+                    </button>
+                }
                 <div class="table-responsive">
                     <table class="table table-bordered" style="background-color: #f8f9fa;">
                         <thead>
@@ -515,20 +531,10 @@
                     </table>
                 </div>
             }
-            else
-            {
-                <p>No skill added for the user.</p>
-            }
+        
 
-
-            <h5>Work Experience:</h5>
-              @if (currentUser.UserID == Model.User.UserID)
-            {
-                <!-- Button to trigger modal -->
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#workExperienceModal">
-                    Add Work Experience
-                </button>
-            }
+        
+          
             <!-- Modal -->
                 <div class="modal fade" id="workExperienceModal" tabindex="-1" role="dialog" aria-labelledby="workExperienceModalLabel" aria-hidden="true">
                     <div class="modal-dialog" role="document">
@@ -574,8 +580,17 @@
           
 
 
-            @if (ViewBag.WorkExperiences != null && ViewBag.WorkExperiences.Count > 0)
+            @if (ViewBag.WorkExperiences != null && ViewBag.WorkExperiences.Count > 0 || currentUser.UserID == Model.User.UserID)
             {
+
+                <h5>Work Experience:</h5> 
+                @if (currentUser.UserID == Model.User.UserID)
+                {
+                    <!-- Button to trigger modal -->
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#workExperienceModal">
+                        Add Work Experience
+                    </button>
+                }
                 <div class="table-responsive">
                     <table class="table table-bordered" style="background-color: #f8f9fa;">
                         <thead class="thead-dark">
@@ -607,24 +622,16 @@
                     </table>
                 </div>
             }
-            else
-            {
-                <p>No work experience added for the user.</p>
-            }
+            
 
 
            
 
      
 
-            <h5>Languages:</h5>
+           
             <!-- Button to trigger modal -->
-              @if (currentUser.UserID == Model.User.UserID)
-                {
-<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addLanguageModal">
-    Add Language
-</button>
-                }
+             
 
 <!-- Modal -->
 <div class="modal fade" id="addLanguageModal" tabindex="-1" role="dialog" aria-labelledby="addLanguageModalLabel" aria-hidden="true">
@@ -663,8 +670,16 @@
 </div>
 
 
-            @if (ViewBag.UserLanguages != null && ViewBag.UserLanguages.Count > 0)
+            @if (ViewBag.UserLanguages != null && ViewBag.UserLanguages.Count > 0 || currentUser.UserID == Model.User.UserID)
             {
+
+                <h5>Languages:</h5>
+                @if (currentUser.UserID == Model.User.UserID)
+                {
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addLanguageModal">
+                        Add Language
+                    </button>
+                }
                 <div class="table-responsive" >
                     <table class="table table-bordered" style="background-color: #f8f9fa;">
                         <thead class="thead-dark">
@@ -692,22 +707,13 @@
                     </table>
                 </div>
             }
-            else
-            {
-                <p>No Language added for the user.</p>
-            }
+           
 
 
 
 
-            <h5>Education</h5>
-              @if (currentUser.UserID == Model.User.UserID)
-                {
-            <!-- Button to trigger modal -->
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addEducationModal">
-                Add Education
-            </button>
-                }
+            
+             
             <!-- Modal -->
             <div class="modal fade" id="addEducationModal" tabindex="-1" role="dialog" aria-labelledby="addEducationModalLabel" aria-hidden="true">
                 <div class="modal-dialog" role="document">
@@ -760,8 +766,16 @@
                 </div>
             </div>
 
-            @if (ViewBag.UserSchools != null && ViewBag.UserSchools.Count > 0)
+            @if (ViewBag.UserSchools != null && ViewBag.UserSchools.Count > 0 || currentUser.UserID == Model.User.UserID)
             {
+                <h5>Education</h5>
+                @if (currentUser.UserID == Model.User.UserID)
+                {
+                    <!-- Button to trigger modal -->
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addEducationModal">
+                        Add Education
+                    </button>
+                }
                 <div class="table-responsive">
                     <table class="table table-bordered" style="background-color: #f8f9fa;">
                         <thead class="thead-dark">
@@ -791,10 +805,7 @@
                     </table>
                 </div>
             }
-            else
-            {
-                <p>No education history is added for the user.</p>
-            }
+          
 
             </div>
 

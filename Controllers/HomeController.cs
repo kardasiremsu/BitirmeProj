@@ -122,6 +122,12 @@ namespace BitirmeProj.Controllers
           */
         // Pass user data to the view
         ViewBag.CurrentUser = currentUser;
+            var appliedJobIds = await _context.Applications
+      .Where(a => a.UserID == currentUser.UserID)
+      .Select(a => a.JobID)
+      .ToListAsync();
+
+            ViewBag.AppliedJobIds = appliedJobIds;
             var totalJobsCount = await jobs.CountAsync();
             ViewData["TotalJobsCount"] = totalJobsCount;
 

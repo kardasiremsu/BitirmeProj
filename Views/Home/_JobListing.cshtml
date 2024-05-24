@@ -9,6 +9,8 @@
 
 @{
     User currentUser = ViewBag.CurrentUser;
+    List<int> appliedJobIds = ViewBag.AppliedJobIds ?? new List<int>();
+
 }
 @inject ApplicationDBContext _context // Inject ApplicationDBContext into the view
 
@@ -16,9 +18,11 @@
 {
     var postedByFullName = UserService.GetUserFullName(item.PostedBy, _context);
     bool postedByCurrentUser = item.PostedBy == currentUser.UserID;
+    var postedByInstitution = UserService.GetUserInstitution(item.PostedBy, _context); // Assuming this method exists
+    bool hasApplied = appliedJobIds.Contains(item.JobID);
 
     <div class="job-card">
-        <p><strong>Posted By:</strong> @postedByFullName</p>
+        <p><strong>Posted by:</strong> @postedByInstitution </p>
         <h2>@Html.DisplayFor(modelItem => item.JobTitle)</h2>
         <p><strong>Location:</strong> @Html.DisplayFor(modelItem => item.JobLocation)</p>
         <p><strong>Application Deadline:</strong> @Html.DisplayFor(modelItem => item.ApplicationDeadline)</p>
@@ -40,7 +44,7 @@
         </form>
         @if (!postedByCurrentUser)
         {
-            <button type="button" class="btn btn-success" onclick="applyJob('@item.JobID')">Apply</button>
+            <button type="button" class="btn btn-success" onclick="applyJob('@item.JobID')" @(hasApplied ? "disabled" : "")>Apply</button>
         }
     </div>
 }

@@ -78,20 +78,30 @@ namespace BitirmeProj.Controllers
 
 
             ViewBag.JobNames = jobNames;
-            var jobs = _context.JobListings
-    .Where(j => jobApplicationIds.Contains(j.JobID))
-    .Join(
-        _context.Users,
-        job => job.PostedBy,
-        user => user.UserID,
-        (job, user) => new
-        {
-            Job = job,
-            PostedBy = user.UserName
-        })
-    .ToList();
+            // Retrieve job applications for the user including ApplicationDate
+            var jobApplications = _context.Applications
+                .Where(a => a.UserID == userId)
+                .Join(
+                    _context.JobListings,
+                    application => application.JobID,
+                    job => job.JobID,
+                    (application, job) => new { application, job }
+                )
+                .Join(
+                    _context.Users,
+                    jobApplication => jobApplication.job.PostedBy,
+                    user => user.UserID,
+                    (jobApplication, user) => new
+                    {
+                        Job = jobApplication.job,
+                        ApplicationDate = jobApplication.application.ApplicationDate.ToShortDateString(),
+                        PostedBy = user.Institution
+                    }
+                )
+                .ToList();
 
-            ViewBag.Jobs = jobs;
+            ViewBag.Jobs = jobApplications;
+
 
 
 /*            var userJobs = _context.JobListings
@@ -135,7 +145,8 @@ namespace BitirmeProj.Controllers
                 .Select(j => new
                 {
                     JobID = j.JobID,
-                    JobTitle = j.JobTitle
+                    JobTitle = j.JobTitle,
+                    JobCreationDate = j.JobCreatedDate.ToShortDateString()
                     // Diğer iş ilanı özelliklerini ekleyebilirsiniz
                 })
                 .ToList();
@@ -204,6 +215,25 @@ namespace BitirmeProj.Controllers
             ViewBag.Applicants = applicants;
 
             return View("_ApplicantsPartial", applicants);
+        }
+
+        public IActionResult ShowJobs(int jobId)
+        {
+            System.Diagnostics.Debug.WriteLine("Shıw jobs");
+            System.Diagnostics.Debug.WriteLine(jobId);
+
+            var job = _context.JobListings.FirstOrDefault(j => j.JobID == jobId);
+            if (job == null)
+            {
+                return NotFound();
+            }
+
+            ViewBag.Jobs = job;
+
+
+          
+
+            return View("_JobInformationPartial");
         }
 
         // GET: People/Details/5
