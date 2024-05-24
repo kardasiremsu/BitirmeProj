@@ -12,5 +12,10 @@ namespace BitirmeProj.Utilities
 
             return user != null ? $"{user.FirstName} {user.LastName}" : "Unknown User";
         }
+        public static string GetUserInstitution(int userId, ApplicationDBContext context)
+        {
+            var user = context.Users.FirstOrDefault(u => u.UserID == userId);
+            return user.Institution;
+        }
     }
 }

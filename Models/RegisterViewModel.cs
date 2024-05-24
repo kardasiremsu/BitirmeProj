@@ -1,8 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using MailKit;
+using Microsoft.AspNetCore.Identity;
 
 namespace BitirmeProj.Models
 {
-    public class RegisterViewModel
+    public class RegisterViewModel : IdentityUser
     {
         [Required]
         public string UserName { get; set; }
@@ -29,5 +31,8 @@ namespace BitirmeProj.Models
         public string Title { get; set; }
         public string Phone { get; set; }
         public string Address { get; set; }
+        public string? Institution { get; set; }
+        public bool EmailConfirmed { get; set; }
+        public int Token { get; set; }
     }
 }

@@ -1,0 +1,25 @@
+﻿@page
+@model BitirmeProj.Models.ActivationViewModel
+@{
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Account Activation</title>
+</head>
+<body>
+    <h1>Account Activation</h1>
+    <p>Welcome, please activate your account.</p>
+
+    <form method="post" action="/Account/ActivateAccount">
+        <input type="hidden" name="userId" value="@Model.UserId" />
+        <p>UserID: @Model.UserId</p>
+
+        <label for="token">Enter Token:</label>
+        <input type="text" id="token" name="token" required />
+
+        <button type="submit">Activate Account</button>
+    </form>
+</body>
+</html>

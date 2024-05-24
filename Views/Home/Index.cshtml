@@ -1,11 +1,14 @@
 ﻿@using BitirmeProj.Data
-@using BitirmeProj.Data
 @using BitirmeProj.Utilities
+@using System.Security.Claims
+@using BitirmeProj.Services;
+
 @model IEnumerable<BitirmeProj.Models.JobListing>
 @inject ApplicationDBContext _context // Inject ApplicationDBContext into the view
 
 @{
     ViewData["Title"] = "Home Page";
+    
 
 }
 
@@ -81,8 +84,8 @@
             }
 
         .job-details {
-            overflow-x: auto; /* Enable horizontal scrolling */
-            white-space: pre-wrap; /* Preserve whitespace and wrap lines */
+            overflow-x: hidden;
+            /* Enable horizontal scrolling */
         }
 
             .job-details pre {
@@ -124,10 +127,14 @@
                     </section>
                     <section class="filter-section">
                         <h4>Filter Jobs</h4>
+                      
+
+
+
                         <form asp-action="Index" method="get">
                             <div class="form-group">
                                 <label for="experienceLevel">Experience Level</label>
-                                <select id="experienceLevel" class="form-select" name="ExperienceLevel" required>
+                                <select id="experienceLevel" class="form-select" name="experienceLevel">
                                     <option value="">Open this select menu</option>
 
                                     @foreach (var kvp in BitirmeProj.Utilities.JobApplicationOptions.ExperienceLevelOptions)
@@ -137,13 +144,11 @@
                                 </select>
                             </div>
 
-                        </form>
-
-                        <form asp-action="Index" method="get">
+                   
                             <div class="form-group">
 
-                                <label for="jobLocationOption">Job Location</label>
-                                <select id="jobLocationOption" class="form-select mt-2" name="JobLocation" required>
+                                <label for="jobLocation">Job Location</label>
+                                <select id="jobLocation" class="form-select mt-2" name="jobLocation">
                                     <option value="">Open this select menu</option>
                                     @foreach (var kvp in BitirmeProj.Utilities.JobApplicationOptions.JobLocationOptions)
                                     {
@@ -151,26 +156,10 @@
                                     }
                                 </select>
                             </div>
-                        </form>
-
-                        <form asp-action="Index" method="get">
-                            <div class="form-group">
-
-                                <label for="jobLocationOption">Job Location</label>
-                                <select id="jobLocationOption" class="form-select mt-2" name="JobLocation" required>
-                                    <option value="">Open this select menu</option>
-                                    @foreach (var kvp in BitirmeProj.Utilities.JobApplicationOptions.JobLocationOptions)
-                                    {
-                                        <option value="@kvp.Key">@kvp.Value</option>
-                                    }
-                                </select>
-                            </div>
-                        </form>
-
-                        <form asp-action="Index" method="get">
+       
                             <div class="form-group">
                                 <label for="jobtype">Job Type</label>
-                                <select id="jobtype" class="form-select" name="JobType" required>
+                                <select id="jobtype" class="form-select" name="jobType">
                                     <option value="">Open this select menu</option>
                                     @foreach (var kvp in BitirmeProj.Utilities.JobApplicationOptions.JobTypeOptions)
                                     {
@@ -180,48 +169,115 @@
                             </div>
                             <button type="submit" class="btn btn-secondary">Filter</button>
                         </form>
+                        <br />
+                      
                     </section>
 
                 </div>
+
                 <div class="col-md-9">
                     <div class="container">
-                        @foreach (var item in Model)
-                        {
-                            var postedByFullName = UserService.GetUserFullName(item.PostedBy, _context); // Assuming _context is available in your Razor view or controller
-
-                            <div class="job-card">
-                                <p><strong>Posted By:</strong> @postedByFullName</p>
-                                <h2>@Html.DisplayFor(modelItem => item.JobTitle)</h2>
-                                <p><strong>Job Location:</strong> @Html.DisplayFor(modelItem => item.JobLocation)</p>
-                                <p><strong>Job Application Deadline:</strong> @Html.DisplayFor(modelItem => item.ApplicationDeadline)</p>
-                                <div class="job-details">
-                                    <p><strong>Description:</strong></p>
-                                    <pre class="description-limit">@Html.Raw(item.JobDescription)</pre>
-                                    <p class="read-more-btn">Read More</p>
+                        <form asp-action="Index" method="get">
+                            <div class="input-group mb-3">
+                                <input type="text" class="form-control" placeholder="Search" name="searchTerm">
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-secondary" type="submit">Search</button>
                                 </div>
-                                <button type="button" class="btn btn-primary" onclick="editJob()">Edit</button>
-                                <button type="button" class="btn btn-success" onclick="applyJob()">Apply</button>
-                                <!--   <a class="read-more-btn">Read More</a>
-                                    <button type="button" class="btn btn-primary" onclick="viewJobDetails({
-                                    jobID: '@item.JobID',
-                                    jobTitle: '@Html.Raw(item.JobTitle)',
-                                    jobLocation: '@Html.Raw(item.JobLocation)',
-                                    jobType: '@item.JobType',
-                                    applicationDeadline: '@item.ApplicationDeadline',
-                                    experienceLevel: '@item.ExperienceLevel',
-                                    salary: '@item.Salary',
-                                    salaryCurrency: '@item.SalaryCurrency'
-                                })">
-                                        View Job Details
-                                    </button>-->
                             </div>
 
-                        }
-                    </div>
-                </div>
-            </div>
-        </div>
+                        </form>
+                   <!--
 
+                    <div class="container">
+                                            <form asp-action="Index" method="get" onsubmit="return false;">
+                                                <div class="input-group mb-3">
+                                                    <input type="text" class="form-control" placeholder="Search" name="searchTerm" id="searchInput">
+                                                </div>
+                                            </form>
+
+                                            <script>
+                                                document.getElementById("searchInput").addEventListener("input", function () {
+                                                    this.form.submit(); // Submit the form whenever the input value changes
+                                                });
+                                            </script>
+
+
+
+
+                   --> 
+                    </div>
+                     
+                     
+                        <div class="col-md-12">
+                        <h5>@ViewData["TotalJobsCount"] jobs are found.</h5>
+                        </div>
+
+                        <div id="job-container">
+    @Html.Partial("_JobListing", Model)
+</div>
+
+                    <div id="loading" style="display: none; text-align: center; padding: 20px;">
+                        <img src="~/images/loading.gif" alt="Loading..." style="width: 60px; height: 60px;" />
+                      
+                    </div>
+                    @section Scripts {
+                        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+                        <script type="text/javascript">
+                            $(document).ready(function () {
+                                var page = 1;
+                                var loading = false;
+
+                                function loadMoreJobs() {
+                                    if (loading) return;
+                                    loading = true;
+                                    $('#loading').show();
+
+                                    setTimeout(function () { // Add a delay of 5 seconds (5000 milliseconds)
+                                        $.ajax({
+                                            url: '@Url.Action("Index", "Home")',
+                                            data: {
+                                                sortOrder: '@ViewData["TitleSortParam"]',
+                                                searchTerm: '@ViewData["searchTerm"]',
+                                                experienceLevel: '@ViewData["experienceLevel"]',
+                                                jobLocation: '@ViewData["jobLocation"]',
+                                                jobType: '@ViewData["jobType"]',
+                                                page: page + 1,
+                                                pageSize: 10
+                                            },
+                                            success: function (data) {
+                                                if (data.trim().length > 0) {
+                                                    $('#job-container').append(data);
+                                                    page++;
+                                                }
+                                                $('#loading').hide();
+                                                loading = false;
+                                            },
+                                            error: function () {
+                                                $('#loading').hide();
+                                                loading = false;
+                                            }
+                                        });
+                                    }, 1000); // 5000 milliseconds = 5 seconds
+                                }
+
+                                $(window).scroll(function () {
+                                    if ($(window).scrollTop() + $(window).height() >= $(document).height() - 100) {
+                                        loadMoreJobs();
+                                    }
+                                });
+                            });
+                        </script>
+                    }
+                     
+        <script>
+            function applyJob(jobID) {
+                
+                document.getElementById("jobID").value = jobID;
+                document.getElementById("applyForm").submit();
+            }
+        </script>
+       
+       
         <!-- Modal -->
         <div class="modal fade" id="jobDetailsModal" tabindex="-1" role="dialog" aria-labelledby="jobDetailsModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
@@ -289,10 +345,7 @@
                 window.location.href = '/Job/Edit/' + jobId;
             }
 
-            function applyJob(jobId) {
-                // Add logic to handle applying to the job
-                console.log('Applying to job with ID ' + jobId);
-            }
+           
             function getJobTypeText(jobType) {
 
                 // Replace this with your actual logic to retrieve job type text from dictionary
@@ -321,3 +374,12 @@
     </main>
 </body>
 </html>
+@{
+    var message = TempData["SuccessMessage"] ?? string.Empty;
+}
+
+<script type="text/javascript">
+    var message = '@message';
+    if (message)
+        alert(message);
+</script>

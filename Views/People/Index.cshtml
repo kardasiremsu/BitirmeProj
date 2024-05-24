@@ -1,12 +1,16 @@
-﻿@model BitirmeProj.Models.User
+﻿@model BitirmeProj.Models.UserProfileViewModel
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Profile";
+    User currentUser = ViewBag.CurrentUser;
+
 }
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
-    
-    <style>
+
+
+<style>
         /* Add custom CSS styles here */
         .profile-container {
             max-width: 800px;
@@ -21,14 +25,13 @@
 
         .profile-photo {
             width: 200px;
-            height: 200px;
+            height: auto;
             border-radius: 50%;
             margin-right: 20px;
         }
 
         .profile-details {
             font-size: 18px;
-        background-color: #EFE9E9;
         padding: 10px;
         border-radius: 5%;
     }
@@ -51,7 +54,6 @@
         }
         
         .user-info-lists{
-        background-color: #EFE9E9;
         margin-top: 15px;
         border-radius: 5%;
     }
@@ -62,122 +64,761 @@
 <div class="container profile-container">
     <div class="row">
         <div class="col-md-4">
-            <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" alt="Profile Photo" class="profile-photo">
+            <img src="@(Model.User.ProfilePhotoURL)"  class="profile-photo">
+                 @if (currentUser.UserID == Model.User.UserID)
+                {
+            <form method="post" enctype="multipart/form-data" action="/People/UploadProfilePhoto">
+                <div class="form-group">
+                    <label for="photoFile"></label>
+                    <input type="file" class="form-control-file" id="photoFile" name="photoFile" accept="image/*" required>
+                </div>
 
+                    <button style="margin-top: 10px;"  type="submit" class="btn btn-success">Upload Photo</button>
+            </form>
+                }
         </div>
         <div class="col-md-8">
-            <h2>Profile</h2>
+            <h2> @Model.User.FirstName  @Model.User.LastName</h2>
+            <h4>   @Model.User.Institution</h4>
+            <p>@Model.User.Title</p>
+            @if (!string.IsNullOrEmpty(@Model.User.Linkedin))
+            {
+                <a href="@Model.User.Linkedin" target="_blank">
+                    <img src="/images/linkedin-logo.png" alt="Linkedin" style="width: 35px; height: 35px; vertical-align: middle;" />
+                </a>
+            }
+          
+            
            <div id="profileInfo">
 
-                <button id="editProfileBtn" class="btn btn-light">Edit</button>
-            <div id="profileDetails" class="profile-details">
+                <!--<button id="editProfileBtn" class="btn btn-light">Edit Profile</button>-->
 
-                <p><strong>Username:</strong> @Model.UserName</p>
-                <p><strong>Email:</strong> @Model.Email</p>
-                <p><strong>First Name:</strong> @Model.FirstName</p>
-                <p><strong>Last Name:</strong> @Model.LastName</p>
-                <p><strong>Gender:</strong> @(Model.Gender == 0 ? "Female" : "Male")</p>
-                <p><strong>Title:</strong> @Model.Title</p>
-                <p><strong>Phone:</strong> @Model.Phone</p>
-                <p><strong>Address:</strong> @Model.Address</p>
+                <div id="profileDetails" class="profile-details">
+                    @if (currentUser.UserID == Model.User.UserID)
+                {
+                    <div class="mb-3">
+                        <button type="button" class="btn btn-light" data-toggle="modal" data-target="#editProfileModal">
+                            <i class="fas fa-pencil-alt"></i> Update Profile
+                        </button>
+                    </div>
+                }
+                    <!---
+                      <div class="mb-3">
+                        <label for="username" class="fw-bold">Username:</label>
+                        <p id="username">@Model.User.UserName</p>
+                    </div>
+                  <div class="mb-3">
+                          <label for="gender" class="fw-bold">Gender:</label>
+                          <p id="gender">@{
+                        if (Model.User.Gender == 0)
+                        {
+                            <text>Female</text>
+                        }
+                        else
+                        {
+                            <text>Male</text>
+                        }
+                    }</p>
+                      </div>--->
+                        <label for="email" class="fw-bold">E-mail:</label>
+                        <p id="email">@Model.User.Email</p>
+
+                        <label for="phone" class="fw-bold">Phone:</label>
+                        <p id="phone">@Model.User.Phone</p>
+
+                        <label for="address" class="fw-bold">Address:</label>
+                        <p id="address">@Model.User.Address</p>
+
+                </div>
+
+
+             
             </div>
-        
 
-        <div class="user-info-lists border p-3">
-            <p><strong>CVs:</strong> model.CVs</p>
-                <p><strong>Job Application:</strong> SQL will be inserted</p>
-                <p><strong>Jobs:</strong> SQL will be inserted</p>
-
-        
-            </div>
-            </div>
-            <div id="editProfileForm" style="display: none;">
-                <!-- Editable fields will be displayed here -->
-                <form id="editForm">
-                    @Html.AntiForgeryToken()
-
-                    <div class="form-group">
-                        <label for="UserName">Username</label>
-                        <input type="text" class="form-control" id="UserName" name="UserName" value="@Model.UserName" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="FirstName">First Name</label>
-                        <input type="text" class="form-control" id="FirstName" name="FirstName" value="@Model.FirstName" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="LastName">Last Name</label>
-                        <input type="text" class="form-control" id="LastName" name="LastName" value="@Model.LastName" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="Email">Email</label>
-                        <input type="email" class="form-control" id="Email" name="Email" value="@Model.Email" required>
-                    </div>
-
-
-                     <div class="form-group">
-            <label for="Gender">Gender</label>
-            <select class="form-control" id="Gender" name="Gender" required>
-                <option value="">Select Gender</option>
-                <option value="0">Female</option>
-                <option value="1">Male</option>
-                <option value="2">Other</option>
-            </select>
+           
         </div>
-                    <!-- Add other editable fields -->
-                    <button id="cancelEditBtn" type="button" class="btn btn-secondary">Cancel</button>
+        <!-- Modal -->
+        <div class="modal fade" id="editProfileModal" tabindex="-1" role="dialog" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editProfileModalLabel">Edit Profile</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Editable fields will be displayed here -->
+                        <form id="editForm" method="post" action="/People/EditProfile" class="my-4">
+                            @Html.AntiForgeryToken()
 
-                    <button id="saveProfileBtn" type="button" class="btn btn-primary">Save</button>
+                            @Html.HiddenFor(model => model.User.UserID)
+                            @Html.HiddenFor(model => model.User.UserType)
+                            @Html.HiddenFor(model => model.User.Password)
+                            @Html.HiddenFor(model => model.User.Title)
+                            @Html.HiddenFor(model => model.User.Institution)
+                            @Html.HiddenFor(model => model.User.Token)
+                            @Html.HiddenFor(model => model.User.isActive)
+
+                            <div class="form-group">
+                                <label for="UserName">Username</label>
+                                <input type="text" class="form-control" id="UserName" name="UserName" value="@Model.User.UserName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="FirstName">First Name</label>
+                                <input type="text" class="form-control" id="FirstName" name="FirstName" value="@Model.User.FirstName" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="LastName">Last Name</label>
+                                <input type="text" class="form-control" id="LastName" name="LastName" value="@Model.User.LastName" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="Email">E-mail</label>
+                                <input type="email" class="form-control" id="Email" name="Email" value="@Model.User.Email" required>
+                            </div>
+
+
+                            <div class="form-group">
+                                <label for="Institution">Institution</label>
+                                <input type="text" class="form-control" id="Institution" name="Institution" value="@Model.User.Institution" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="Title">Title</label>
+                                <input type="text" class="form-control" id="Title" name="Title" value="@Model.User.Title" required>
+                            </div>
+
+
+                            <div class="form-group">
+                                <label for="Address">Address</label>
+                                <input type="text" class="form-control" id="Address" name="Address" value="@Model.User.Address" required>
+                            </div>
+
+
+                            <div class="form-group">
+                                <label for="Phone">Phone</label>
+                                <input type="text" class="form-control" id="Phone" name="Phone" value="@Model.User.Phone" required>
+                            </div>
+
+
+                            <div class="form-group">
+                                <label for="Linkedin">Linkedin URL</label>
+                                <input type="text" class="form-control" id="Linkedin" name="Linkedin" value="@Model.User.Linkedin" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="Gender">Gender</label>
+                                <select class="form-control" id="Gender  name="Gender" required>
+                                   
+                                    <option value="0">Female</option>
+                                    <option value="1">Male</option>
+                                    <option value="2">Other</option>
+                                </select>
+                            </div>
+                            <!-- Add other editable fields -->
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="cancelEditBtn" type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button id="saveProfileBtn" type="button" class="btn btn-primary">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                var saveBtn = document.getElementById("saveProfileBtn");
+                var editForm = document.getElementById("editForm");
+
+                saveBtn.addEventListener("click", function () {
+                    editForm.submit();
+                });
+
+                // Form gönderildikten sonra işlemler
+                editForm.addEventListener("submit", function (event) {
+                    event.preventDefault(); // Sayfanın yeniden yüklenmesini engelle
+
+                    // Formun gönderilmesi
+                    fetch(editForm.action, {
+                        method: editForm.method,
+                        body: new FormData(editForm),
+                        headers: {
+                            "RequestVerificationToken": '@Html.AntiForgeryToken()'
+                        }
+                    })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            // Başarılı yanıt geldiğinde yapılacak işlemler
+                            console.log(data);
+                            $('#editProfileModal').modal('hide'); // Modal'ı kapat
+                            location.reload(); // Sayfayı yenile
+                        })
+                        .catch(error => {
+                            // Hata durumunda yapılacak işlemler
+                            console.error('There has been a problem with your fetch operation:', error);
+                        });
+                });
+            });
+        </script>
+
+
+
+        </script>
+                <div class="user-info-lists border p-3">
+                      @if (currentUser.UserID == Model.User.UserID)
+            {
+                <h4 class="mb-4">Upload CV</h4>
+                <form method="post" enctype="multipart/form-data" action="/People/UploadCV">
+                    <div class="form-group">
+                        <label for="cvFile">Choose CV File:</label>
+                        <input type="file" class="form-control-file" id="cvFile" name="cvFile" accept=".pdf,.doc,.docx" required>
+                        <br /><small class="form-text text-muted">Please select a PDF, DOC, or DOCX file.</small>
+                    </div>
+                    <button style="margin-top: 8px;" class="btn btn-success" type="submit">Upload CV</button>
+                </form>
+            }
+            <h5 class="mt-5">CVs</h5>
+                    <div class="table-responsive">
+                <table class="table table-bordered" style="background-color: #f8f9fa;">
+                            <thead>
+                                <tr>
+                                    <th >CV Name</th>
+                                    <th >Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var cv in Model.CV)
+                                {
+                                    <tr>
+                                        <td>@cv.CVName</td>
+                                        <td>
+                                            <div class="btn-group" role="group" aria-label="CV actions">
+                                                <a href="/cvs/@($"{cv.CVID}_{cv.CVName}")" class="btn btn-primary" download>Download</a>
+                                        @if (currentUser.UserID == Model.User.UserID)
+                                        {
+                                                <form action="/People/DeleteCV" method="post">
+                                                    <input type="hidden" name="CVID" value="@cv.CVID" />
+                                                    <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this CV?')">Delete</button>
+                                                </form>
+                                        }
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                        <br />
+                    </div>
+               
+
+                    <script>
+                        function deleteCV(cvId) {
+                            if (confirm("Are you sure you want to delete this CV?")) {
+                                // Perform an AJAX request to delete the CV
+                                fetch(`/cv/delete/${cvId}`, {
+                                    method: 'DELETE'
+                                })
+                                    .then(response => {
+                                        if (response.ok) {
+                                            // Reload the page or update the UI as needed
+                                            window.location.reload();
+                                        } else {
+                                            console.error('Failed to delete CV');
+                                        }
+                                    })
+                                    .catch(error => console.error('Error:', error));
+                            }
+                        }
+                    </script>
+                      @if (currentUser.UserID == Model.User.UserID)
+                {
+            <p><strong>Jobs Applications:</strong></p>
+
+            @if (ViewBag.Jobs != null && ViewBag.Jobs.Count > 0)
+            {
+                <div class="table-responsive">
+                    <table class="table table-bordered" style="background-color: #f8f9fa;">
+                        <thead>
+                            <tr>
+                                <th>Job</th>
+                                <th>Posted By</th>
+                                <th>Application Date</th>
+                                    
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var job in ViewBag.Jobs)
+                            {
+                                <tr>
+                                    <td>
+                                            <a href="javascript:void(0);" onclick="showJobs('@job.Job.JobID')">@job.Job.JobTitle</a>
+                                        </td>
+                                    <td>@job.PostedBy</td>
+                                        <td>@job.ApplicationDate</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <p>No job applications found for this user.</p>
+            }
+
+                <p><strong>Job Posted by the User:</strong> </p>
+            @if (ViewBag.UserJobs != null && ViewBag.UserJobs.Count > 0)
+            {
+                <div class="table-responsive">
+                    <table class="table table-bordered" style="background-color: #f8f9fa;">
+                        <thead>
+                            <tr>
+                                <th>Job Title</th>
+                                <th>Action</th>
+                                <th>Creation Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var job in ViewBag.UserJobs)
+                            {
+                                <tr>
+                                    <td>@job.JobTitle</td>
+                                    <td>
+                                        <button type="button" class="btn btn-sm btn-primary  ml-1" onclick="showApplicants('@job.JobID')">View Applicants</button>
+                                        <form method="post" action="/People/DeleteJobs" onsubmit="return confirm('Are you sure you want to delete this job?');" style="display: inline;">
+                                            <input type="hidden" name="JobID" value="@job.JobID" />
+                                            <button type="submit" class="btn btn-sm btn-danger ml-1"><i class="fas fa-times"></i> Delete</button>
+                                        </form>
+                                    </td>
+                                        <td>@job.JobCreationDate</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <p>No jobs found.</p>
+            }
+
+            }
+            <!-- Modal for displaying applicants -->
+            <div class="modal fade" id="applicantModal" tabindex="-1" role="dialog" aria-labelledby="applicantModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="applicantModalLabel">Applicants</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Email</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="applicantTableBody">
+                                        <!-- Applicants will be loaded here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @section Scripts {
+                <script>
+                    function showApplicants(jobId) {
+                        var url = '/People/ShowApplicants?jobId=' + jobId;
+                        window.location.href = url; // Redirect to the URL
+                    }
+                </script>
+
+                <script>
+                    function showJobs(jobId) {
+                        var url = '/People/ShowJobs?jobId=' + jobId;
+                        window.location.href = url; // Redirect to the URL
+                    }
+                </script>
+            }
+
+
+         
+
+          
+            
+            <!-- Modal -->
+            <div class="modal fade" id="addSkillModal" tabindex="-1" role="dialog" aria-labelledby="addSkillModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="addSkillModalLabel">Add Skill</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <!-- Skill Form -->
+                            <form method="post" action="/People/AddSkill" class="my-4">
+                                <div class="form-group">
+                                    <label for="Name">Skill Name:</label>
+                                    <input type="text" id="Name" name="Name" class="form-control" placeholder="Enter Skill Name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="Experience">Experience Level:</label>
+                                    <select id="Experience" name="Experience" class="form-control" required>
+                                        <option value="Beginner">Beginner</option>
+                                        <option value="Intermediate">Intermediate</option>
+                                        <option value="Advanced">Advanced</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Add Skill</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @if (ViewBag.UserSkills != null && ViewBag.UserSkills.Count > 0 || currentUser.UserID == Model.User.UserID)
+            {
+                <h5>Skills:</h5>
+                @if (currentUser.UserID == Model.User.UserID)
+                {
+                    <!-- Button to trigger modal -->
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addSkillModal">
+                        Add Skill
+                    </button>
+                }
+                <div class="table-responsive">
+                    <table class="table table-bordered" style="background-color: #f8f9fa;">
+                        <thead>
+                            <tr>
+                                <th>Skill</th>
+                                <th>Experience</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var skill in ViewBag.UserSkills)
+                            {
+                                <tr>
+                                    <td>@skill.Name</td>
+                                    <td>@skill.Experience</td>
+                                    <td>
+                                        <form method="post" action="/People/DeleteSkill" onsubmit="return confirm('Are you sure you want to delete this skill?');">
+                                            <input type="hidden" name="SkillID" value="@skill.SkillID" />
+                                            <button type="submit" class="btn btn-sm btn-danger" style="padding: 3px 8px;"><i class="fas fa-times"></i> Delete</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        
+
+        
+          
+            <!-- Modal -->
+                <div class="modal fade" id="workExperienceModal" tabindex="-1" role="dialog" aria-labelledby="workExperienceModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="workExperienceModalLabel">Work Experience</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <!-- Work Experience Form -->
+                                <form method="post" action="/People/AddWorkExperience" class="my-4">
+                                    <div class="form-group">
+                                        <label for="Institution">Institution:</label>
+                                        <input type="text" id="Institution" name="Institution" class="form-control" placeholder="Enter Institution">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="Title">Title:</label>
+                                        <input type="text" id="Title" name="Title" class="form-control" placeholder="Enter Title">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="StartDate">Start Date:</label>
+                                        <input type="date" id="StartDate" name="StartDate" class="form-control" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="FinishDate">Finish Date:</label>
+                                        <input type="date" id="FinishDate" name="FinishDate" class="form-control">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="Description">Description:</label>
+                                        <textarea id="Description" name="Description" class="form-control" placeholder="Enter Description"></textarea>
+                                    </div>
+                                    <!-- Add other fields as needed -->
+                                    <button type="submit" class="btn btn-primary">Add Work Experience</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+           
+
+          
+
+
+            @if (ViewBag.WorkExperiences != null && ViewBag.WorkExperiences.Count > 0 || currentUser.UserID == Model.User.UserID)
+            {
+
+                <h5>Work Experience:</h5> 
+                @if (currentUser.UserID == Model.User.UserID)
+                {
+                    <!-- Button to trigger modal -->
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#workExperienceModal">
+                        Add Work Experience
+                    </button>
+                }
+                <div class="table-responsive">
+                    <table class="table table-bordered" style="background-color: #f8f9fa;">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th>Institution</th>
+                                <th>Title</th>
+                                <th>Start Date</th>
+                                <th>Finish Date</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var experience in ViewBag.WorkExperiences)
+                            {
+                                <tr>
+                                    <td>@experience.Institution</td>
+                                    <td>@experience.Title</td>
+                                    <td>@experience.StartDate.ToShortDateString()</td>
+                                    <td>@experience.FinishDate.ToShortDateString()</td>
+                                  <td>
+                                        <form method="post" action="/People/DeleteWorkExperience" onsubmit="return confirm('Are you sure you want to delete this work experience?');" style="display: inline;">
+                                            <input type="hidden" name="SkillID" value="@experience.UserWorksID" />
+                                            <button type="submit" class="btn btn-sm btn-danger" title="Delete"><i class="fas fa-times"></i>Delete</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            
+
+
+           
+
+     
+
+           
+            <!-- Button to trigger modal -->
+             
+
+<!-- Modal -->
+<div class="modal fade" id="addLanguageModal" tabindex="-1" role="dialog" aria-labelledby="addLanguageModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addLanguageModalLabel">Languages</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Language Form -->
+                <form method="post" action="/People/AddLanguage" class="my-4">
+                    <div class="form-group">
+                        <label for="Name">Language Name:</label>
+                        <input type="text" id="Name" name="Name" class="form-control" placeholder="Enter Language Name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="Proficiency">Proficiency:</label>
+                        <select id="Proficiency" name="Proficiency" class="form-control" required>
+                            <option value="">Select Proficiency</option>
+                            <option value="Elementary">Elementary</option>
+                            <option value="Limited Working Proficiency">Limited Working Proficiency</option>
+                            <option value="Professional Working Proficiency">Professional Working Proficiency</option>
+                            <option value="Full Professional Proficiency">Full Professional Proficiency</option>
+                            <option value="Native or Bilingual Proficiency">Native or Bilingual Proficiency</option>
+                        </select>
+                    </div>
+                    <!-- Add other fields as needed -->
+                    <button type="submit" class="btn btn-primary">Add Language</button>
                 </form>
             </div>
         </div>
     </div>
 </div>
 
-@section Scripts {
-    <script>
-        // Function to switch between view and edit mode
-        function toggleEditMode(edit) {
-            if (edit) {
-                $('#profileInfo').hide();
-                $('#editProfileForm').show();
-            } else {
-                $('#profileInfo').show();
-                $('#editProfileForm').hide();
-            }
-        }
 
-        // Initial state: Display profile details in read-only mode
-        toggleEditMode(false);
+            @if (ViewBag.UserLanguages != null && ViewBag.UserLanguages.Count > 0 || currentUser.UserID == Model.User.UserID)
+            {
 
-        // Handle click event on Edit button
-        $('#editProfileBtn').click(function () {
-            toggleEditMode(true);
-        });
-        $('#cancelEditBtn').click(function () {
-            // Reload the page to show the same profile
-            location.reload();
-        });
-        // Handle click event on Save button
-        $('#saveProfileBtn').click(function () {
-            var formData = $('#editForm').serialize();
-            $.ajax({
-                url: '/People/Update',
-                method: 'POST',
-                data: formData,
-                success: function () {
-                    // If update is successful, switch back to view mode
-                    toggleEditMode(false);
-                },
-                error: function () {
-                    // Handle error if update fails
-                    alert('Failed to update profile.');
+                <h5>Languages:</h5>
+                @if (currentUser.UserID == Model.User.UserID)
+                {
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addLanguageModal">
+                        Add Language
+                    </button>
                 }
-            });
-        });
-    </script>
-}
+                <div class="table-responsive" >
+                    <table class="table table-bordered" style="background-color: #f8f9fa;">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th>Language Name</th>
+                                <th>Proficiency</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var language in ViewBag.UserLanguages)
+                            {
+                                <tr>
+                                    <td>@language.Name</td>
+                                    <td>@language.Proficiency</td>
+                                    <td>
+                                        <form method="post" action="/People/DeleteLanguage" onsubmit="return confirm('Are you sure you want to delete this Language?');" style="display: inline;">
+                                            <input type="hidden" name="LanguageID" value="@language.LanguageID" />
+                                            <button type="submit" class="btn btn-sm btn-danger" title="Delete"><i class="fas fa-times"></i>Delete</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+           
+
+
+
+
+            
+             
+            <!-- Modal -->
+            <div class="modal fade" id="addEducationModal" tabindex="-1" role="dialog" aria-labelledby="addEducationModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="addEducationModalLabel">Education</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <!-- Education Form -->
+                            <form method="post" action="/People/AddSchool" class="my-4">
+                                <div class="form-group">
+                                    <label for="Name">School Name:</label>
+                                    <select id="Name" name="Name" class="form-control" required>
+                                        <option value="">Select School Name</option>
+                                        <option value="Bogazici University">Bogazici University</option>
+                                        <option value="Istanbul Technical University">Istanbul Technical University</option>
+                                        <option value="Koc University">Koc University</option>
+                                        <option value="Sabanci University">Sabanci University</option>
+                                        <option value="Middle East Technical University">Middle East Technical University</option>
+                                        <option value="Ankara University">Ankara University</option>
+                                        <option value="Hacettepe University">Hacettepe University</option>
+                                        <option value="Izmir Institute of Technology">Izmir Institute of Technology</option>
+                                        <option value="Other">Other</option>
+                                        <!-- Add other Istanbul universities as needed -->
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="Degree">Degree:</label>
+                                    <select id="Degree" name="Degree" class="form-control" required>
+                                        <option value="">Select Degree</option>
+                                        <option value="Associate">Associate</option>
+                                        <option value="Bachelor">Bachelor's</option>
+                                        <option value="Master">Master's</option>
+                                        <option value="Doctorate">Doctorate</option>
+                                        <!-- Add other degree options as needed -->
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="GraduationYear">Graduation Year:</label>
+                                    <input type="text" id="GraduationYear" name="GraduationYear" class="form-control" placeholder="Enter Graduation Year" required>
+                                </div>
+                                <!-- Add other fields as needed -->
+                                <button type="submit" class="btn btn-primary">Add School</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @if (ViewBag.UserSchools != null && ViewBag.UserSchools.Count > 0 || currentUser.UserID == Model.User.UserID)
+            {
+                <h5>Education</h5>
+                @if (currentUser.UserID == Model.User.UserID)
+                {
+                    <!-- Button to trigger modal -->
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addEducationModal">
+                        Add Education
+                    </button>
+                }
+                <div class="table-responsive">
+                    <table class="table table-bordered" style="background-color: #f8f9fa;">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th>Name</th>
+                                <th>Degree</th>
+                                <th>GraduationYear</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var schools in ViewBag.UserSchools)
+                            {
+                                <tr>
+                                    <td>@schools.Name</td>
+                                    <td>@schools.Degree</td>
+                                    <td>@schools.GraduationYear</td>
+                                    <td>
+                                        <form method="post" action="/People/DeleteSchool" onsubmit="return confirm('Are you sure you want to delete this education?');" style="display: inline;">
+                                            <input type="hidden" name="UserSchoolID" value="@schools.UserSchoolID" />
+                                            <button type="submit" class="btn btn-sm btn-danger" title="Delete"><i class="fas fa-times"></i>Delete</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+          
+
+            </div>
+
+
+            </div>
+         
+        </div>
+    </div>
+</div>
+<!-- Bootstrap JS (jQuery must be included before Bootstrap JS) -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
         </div>
 
     </div>

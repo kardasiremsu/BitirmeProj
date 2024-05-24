@@ -1,0 +1,71 @@
+﻿@model List<ApplicantViewModel>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h4>Job Information</h4>
+            <hr />
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Description</th>
+                            <!-- Other job information fields can be added here -->
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>@ViewBag.Jobs.JobTitle</td>
+                            <td>@Html.Raw(ViewBag.Jobs.JobDescription)</td>
+                            <!-- Other job information fields can be added here -->
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <hr />
+            <h4>Applicants</h4>
+            <hr />
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Profile</th>
+                            <th>LinkedIn</th>
+                            <!-- Other applicant information fields can be added here -->
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var applicant in ViewBag.Applicants)
+                        {
+                            <tr>
+                                <td>@applicant.ApplicantName</td>
+                                <td>@applicant.ApplicantEmail</td>
+                                <td>
+                                    <a href="@Url.Action("Index", "People", new { userId = applicant.ApplicantID })">@applicant.ApplicantName</a>
+                                </td>
+                                 <td>
+                                    @if (!string.IsNullOrEmpty(applicant.ApplicantLinkedin))
+                                    {
+                                        <a href="@applicant.ApplicantLinkedin" target="_blank">
+                                            <img src="/images/linkedin-logo.png" alt="Linkedin" style="width: 35px; height: 35px; vertical-align: middle;" />
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <span></span>
+                                    }
+
+                                </td>  
+
+                                <!-- Other applicant information fields can be added here -->
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
