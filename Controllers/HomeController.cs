@@ -20,13 +20,29 @@ namespace BitirmeProj.Controllers
 
         private readonly ApplicationDBContext _context;
         private readonly IUserSessionService _userSessionService;
+        private readonly ILogger<HomeController> _logger;
 
-        public HomeController(ApplicationDBContext context, IUserSessionService userSessionService)
+        public HomeController(ApplicationDBContext context, IUserSessionService userSessionService, ILogger<HomeController> logger)
         {
             _context = context;
             _userSessionService = userSessionService;
-        }
+            _logger = logger;
 
+        }
+        [HttpPost]
+        public IActionResult LogLoadTime([FromBody] LoadTimeLog log)
+        {
+            if (log == null)
+            {
+                _logger.LogError("Log is null");
+                return BadRequest("Log is null");
+            }
+
+            // Log the load time (e.g., save to database or file)
+            _logger.LogInformation($"Path: {log.Path}, Load Time: {log.LoadTime} ms");
+
+            return Ok();
+        }
         // JobDescription içinde skill geçiyorsa true, yoksa false döndüren fonksiyon
         private bool SkillExistsInJobDescription(string jobDescription, string skill)
         {
@@ -35,111 +51,114 @@ namespace BitirmeProj.Controllers
 
         public async Task<IActionResult> Index(string sortOrder, string searchTerm, int? experienceLevel, string jobLocation, int? jobType, int page = 1, int pageSize = 10)
         {
-            var jobs = from j in _context.JobListings select j;
+            var jobsQuery = from j in _context.JobListings select j;
 
             ViewData["TitleSortParam"] = String.IsNullOrEmpty(sortOrder) ? "titleDesc" : "";
             ViewData["DateSortParam"] = sortOrder == "date" ? "dataDesc" : "date";
 
             if (!string.IsNullOrEmpty(jobLocation))
             {
-                jobs = jobs.Where(j => j.JobLocation == jobLocation);
+                jobsQuery = jobsQuery.Where(j => j.JobLocation == jobLocation);
             }
-          
+
             if (!string.IsNullOrEmpty(searchTerm))
             {
-                jobs = jobs.Where(j => j.JobTitle.Contains(searchTerm) || j.JobDescription.Contains(searchTerm));
+                jobsQuery = jobsQuery.Where(j => j.JobTitle.Contains(searchTerm) || j.JobDescription.Contains(searchTerm));
             }
 
             if (experienceLevel != null)
             {
-                jobs = jobs.Where(j => j.ExperienceLevel == experienceLevel);
+                jobsQuery = jobsQuery.Where(j => j.ExperienceLevel == experienceLevel);
             }
 
             if (jobType != null)
             {
-                jobs = jobs.Where(j => j.JobType == jobType);
-            }
-
-            switch (sortOrder)
-            {
-                case "titleDesc":
-                    jobs = jobs.OrderByDescending(j => j.JobTitle);
-                    break;
-                case "date":
-                    jobs = jobs.OrderBy(j => j.JobCreatedDate);
-                    break;
-                case "dataDesc":
-                    jobs = jobs.OrderByDescending(j => j.JobCreatedDate);
-                    break;
-                default:
-                    jobs = jobs.OrderBy(j => j.JobTitle);
-                    break;
+                jobsQuery = jobsQuery.Where(j => j.JobType == jobType);
             }
 
             User currentUser = _userSessionService.GetCurrentUser();
-            // Get the current user's skills
-         /*   var currentUserSkills = _context.UserSkills
-                .Where(us => us.UserID == currentUser.UserID)
-                .Select(us => us.Name) // Bu kısım değişti
-                .ToList();
 
-            System.Diagnostics.Debug.WriteLine("User Skill:");
+            var currentUserSkills = _context.UserSkills
+                                             .Where(us => us.UserID == currentUser.UserID)
+                                             .Select(us => us.Name)
+                                             .ToList();
 
+            System.Diagnostics.Debug.WriteLine("User Skills:");
             foreach (var skill in currentUserSkills)
             {
                 System.Diagnostics.Debug.WriteLine("User Skill: " + skill);
             }
 
-            // İş ilanlarını veritabanından çekmeden önce sadece becerilere göre filtreleme yapalım
-            var skillRelatedJobs = jobs.ToList().Where(j => currentUserSkills.Any(skill => j.JobDescription.Contains(skill)));
+            List<JobListing> skillRelatedJobs = new List<JobListing>();
+            List<JobListing> combinedJobs;
 
-            // Tüm iş ilanlarını çekelim
-            var allJobs = await jobs.AsNoTracking().ToListAsync();
+            if (currentUserSkills.Any())
+            {
+                // If the user has skills, filter and prioritize skill-related jobs
+                var allJobs = await jobsQuery.AsNoTracking().ToListAsync();
+                skillRelatedJobs = allJobs.Where(j => currentUserSkills.Any(skill => j.JobDescription.Contains(skill))).ToList();
 
-            // Diğer iş ilanlarından skillRelatedJobs içinde olmayanları alalım
-            var otherJobs = allJobs.Except(skillRelatedJobs);
+                System.Diagnostics.Debug.WriteLine("Skill Related Jobs:");
+                foreach (var job in skillRelatedJobs)
+                {
+                    var matchingSkills = currentUserSkills.Where(skill => job.JobDescription.Contains(skill)).ToList();
+                    System.Diagnostics.Debug.WriteLine("Job Title: " + job.JobTitle + " - Matching Skills: " + string.Join(", ", matchingSkills));
+                }
 
-            // Skill related iş ilanlarını en üste getirelim ve geri kalanlarla birleştirelim
-            var combinedJobs = skillRelatedJobs.Concat(otherJobs);
+                // Get jobs that are not skill-related
+                var otherJobs = allJobs.Except(skillRelatedJobs).ToList();
 
-            // Geri kalan işlemleri uygulayalım (örneğin, sıralama)
+                // Combine skill-related jobs with other jobs
+                combinedJobs = skillRelatedJobs.Concat(otherJobs).ToList();
+            }
+            else
+            {
+                // If the user has no skills, get all jobs
+                combinedJobs = await jobsQuery.AsNoTracking().ToListAsync();
+            }
+
+            // Apply sorting
             switch (sortOrder)
             {
                 case "titleDesc":
-                    combinedJobs = combinedJobs.OrderByDescending(j => j.JobTitle);
+                    combinedJobs = combinedJobs.OrderByDescending(j => j.JobTitle).ToList();
                     break;
                 case "date":
-                    combinedJobs = combinedJobs.OrderBy(j => j.JobCreatedDate);
+                    combinedJobs = combinedJobs.OrderBy(j => j.JobCreatedDate).ToList();
                     break;
                 case "dataDesc":
-                    combinedJobs = combinedJobs.OrderByDescending(j => j.JobCreatedDate);
+                    combinedJobs = combinedJobs.OrderByDescending(j => j.JobCreatedDate).ToList();
                     break;
                 default:
-                    combinedJobs = combinedJobs.OrderBy(j => j.JobTitle);
+                    combinedJobs = combinedJobs.ToList();
                     break;
             }
 
-          */
-        // Pass user data to the view
-        ViewBag.CurrentUser = currentUser;
+            ViewBag.CurrentUser = currentUser;
+
             var appliedJobIds = await _context.Applications
-      .Where(a => a.UserID == currentUser.UserID)
-      .Select(a => a.JobID)
-      .ToListAsync();
+                                              .Where(a => a.UserID == currentUser.UserID)
+                                              .Select(a => a.JobID)
+                                              .ToListAsync();
 
             ViewBag.AppliedJobIds = appliedJobIds;
-            var totalJobsCount = await jobs.CountAsync();
+
+            var totalJobsCount = combinedJobs.Count();
             ViewData["TotalJobsCount"] = totalJobsCount;
 
-            //  return View(await jobs.AsNoTracking().ToListAsync());
-            var paginatedJobs = await jobs.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+            var paginatedJobs = combinedJobs.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+            ViewBag.SkillRelatedJobs = skillRelatedJobs; // Pass the skill-related jobs to the view
+
             if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
             {
                 return PartialView("_JobListing", paginatedJobs);
             }
+
             return View(paginatedJobs);
         }
-      
+
+
 
 
         public IActionResult CreateApplication()
@@ -147,6 +166,8 @@ namespace BitirmeProj.Controllers
             return View();
         }
 
+    
+      
 
         [HttpPost]
         public IActionResult CreateApplication(int jobID)
@@ -163,7 +184,7 @@ namespace BitirmeProj.Controllers
                 application.Status = "Pending"; // Set the initial status as per your requirement
                 application.ApplicationNote = "applicationNote";
                 application.CoverLetter = "coverLetter";
-                application.CVID = 1;
+                application.CVID = 23;
 
                 _context.Applications.Add(application);
                 _context.SaveChanges();
@@ -239,4 +260,10 @@ namespace BitirmeProj.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
+}
+
+public class LoadTimeLog
+{
+    public string Path { get; set; }
+    public string LoadTime { get; set; }
 }

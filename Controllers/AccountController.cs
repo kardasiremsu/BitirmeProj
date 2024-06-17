@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
@@ -48,6 +49,9 @@ namespace BitirmeProj.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Login(LoginViewModel model)
         {
+            Stopwatch stopWatch = new Stopwatch();
+            stopWatch.Start();
+
             if (ModelState.IsValid)
             {
                 var user = _context.Users.FirstOrDefault(u => u.Email == model.Email);
@@ -57,8 +61,11 @@ namespace BitirmeProj.Controllers
                 {
                     _userSessionService.SetCurrentUser(user);
                     User currentUser = _userSessionService.GetCurrentUser();
-                    System.Diagnostics.Debug.WriteLine("Current Uuser!!");
-                    System.Diagnostics.Debug.WriteLine(currentUser.UserID);
+
+                    // Stop the stopwatch and log the elapsed time
+                    stopWatch.Stop();
+                    System.Diagnostics.Debug.WriteLine("Execution Time: " + stopWatch.ElapsedMilliseconds + " ms");
+
                     // Log in successful, redirect to dashboard or home page
                     return RedirectToAction("Index", "Home");
                 }
@@ -67,8 +74,14 @@ namespace BitirmeProj.Controllers
                     ModelState.AddModelError("", "Invalid email or password");
                 }
             }
+
+            // Stop the stopwatch and log the elapsed time
+            stopWatch.Stop();
+            System.Diagnostics.Debug.WriteLine("Execution Time: " + stopWatch.ElapsedMilliseconds + " ms");
+
             return View(model);
         }
+
         [HttpGet]
         public IActionResult Register()
         {

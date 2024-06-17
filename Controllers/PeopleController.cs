@@ -468,37 +468,11 @@ namespace BitirmeProj.Controllers
             return View(user);
         }
 
-        // POST: People/Edit
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("UserID,FirstName,LastName,Email,Phone")] User user)
-        {
-            if (id != user.UserID)
-            {
-                return NotFound();
-            }
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(user);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!UserExists(user.UserID))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(user);
+        public IActionResult EditJobs()
+        {
+          
+            return View();
         }
 
 
@@ -506,20 +480,62 @@ namespace BitirmeProj.Controllers
 
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditJobs(int id, [Bind("JobID,JobTitle,JobDescription,ApplicationDeadline,JobLocation,WorkPlaceType,JobType,ExperienceLevel,Salary,SalaryCurrency,IsActive,JobCreatedDate")] JobListing model)
+        {
+            try
+            {
+                // Retrieve the job information from the database based on the job ID
+                var job = _context.JobListings.FirstOrDefault(j => j.JobID == id);
+
+                if (job != null)
+                {
+                    job.JobTitle = model.JobTitle;
+                    job.JobDescription = model.JobDescription;
+                    job.ApplicationDeadline = model.ApplicationDeadline;
+                    job.JobLocation = model.JobLocation;
+                    job.WorkPlaceType = model.WorkPlaceType;
+                    job.JobType = model.JobType;
+                    job.ExperienceLevel = model.ExperienceLevel;
+                    job.Salary = model.Salary;
+                    job.SalaryCurrency = model.SalaryCurrency;
+                    job.IsActive = model.IsActive;
+                    job.JobCreatedDate = model.JobCreatedDate;
+
+                    // Save changes to the database
+                    await _context.SaveChangesAsync();
+
+                    return RedirectToAction("Index", "People"); // Redirect to job list after successful edit
+                }
+                else
+                {
+                    ModelState.AddModelError("", "Job not found.");
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                System.Diagnostics.Debug.WriteLine("An error occurred while editing the job: " + ex.Message);
+                // You can also handle the error and return a specific view if needed
+                return RedirectToAction("Error", "Home");
+            }
+
+            // If we got this far, something failed, redisplay the form
+            return RedirectToAction("Index", "Job");
+        }
+
+
+        [HttpPost]
         public IActionResult AddSkill(UserSkill model)
         {
-            System.Diagnostics.Debug.WriteLine("addskill");
-            System.Diagnostics.Debug.WriteLine(model.Name);
-            System.Diagnostics.Debug.WriteLine(model.Experience);
+            
             User currentUser = _userSessionService.GetCurrentUser();
             var currentUserId = currentUser.UserID;
-            System.Diagnostics.Debug.WriteLine("287");
 
             if (ModelState.IsValid)
             {
                 // Check if the skill already exists in the database
 
-                System.Diagnostics.Debug.WriteLine("291");
 
                 var existingSkill = _context.Skills.FirstOrDefault(s => s.Name == model.Name);
                 int skillId;
@@ -528,7 +544,6 @@ namespace BitirmeProj.Controllers
                 // Eğer beceri mevcut değilse, yeni bir beceri oluştur ve veritabanına ekle
                 if (existingSkill == null)
                 {
-                    System.Diagnostics.Debug.WriteLine("300");
 
                     Skill newSkill = new Skill { Name = model.Name };
                     _context.Skills.Add(newSkill);
@@ -551,7 +566,6 @@ namespace BitirmeProj.Controllers
                 }
                 else if(existingSkillForUser == null)
                 {
-                    System.Diagnostics.Debug.WriteLine("330");
                     skillId = existingSkill.SkillID;
                     // Kullanıcının beceri listesine yeni beceriyi ekle
                     UserSkill newUserSkill = new UserSkill

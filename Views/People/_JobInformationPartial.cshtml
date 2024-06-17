@@ -3,21 +3,23 @@
         <div class="col-md-12">
             <h4>Job Information</h4>
             <hr />
-            <div class="table-responsive">
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th>Title</th>
-                            <th>Description</th>
-                            <!-- Other job information fields can be added here -->
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>@ViewBag.Jobs.JobTitle</td>
-                            <td>@Html.Raw(ViewBag.Jobs.JobDescription)</td>
-                            <!-- Other job information fields can be added here -->
-                        </tr>
-                    </tbody>
-                </table>
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">@ViewBag.Jobs.JobTitle</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">Location: @ViewBag.Jobs.JobLocation</h6>
+                    <p class="card-text">@Html.Raw(ViewBag.Jobs.JobDescription)</p>
+                    <p class="card-text">Application Deadline: @ViewBag.Jobs.ApplicationDeadline</p>
+                    
+                    </div>
+                    <a href="#" class="btn btn-primary" onclick="editJob(@ViewBag.Jobs.JobID)">Edit</a>
+                </div>
             </div>
+        </div>
+    </div>
+</div>
+<script>
+    function editJob(jobId) {
+        // Düzenlenecek işin ID'sini alarak düzenleme sayfasına yönlendir
+        window.location.href = '/People/EditJobs/' + jobId;
+    }
+</script>

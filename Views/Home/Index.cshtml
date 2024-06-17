@@ -322,9 +322,7 @@
         <script>
 
             function viewJobDetails(job) {
-                console.log("log deneme");
                 var applicationDeadlineDateOnly = new Date(job.applicationDeadline).toLocaleDateString();
-                console.log("log deneme");
                 // Construct the detailed job information
                 var details = "<p><strong>Title:</strong> " + job.jobTitle + "</p>" +
                     "<p><strong>Location:</strong> " + getJobLocationText(job.jobLocation) + "</p>" +

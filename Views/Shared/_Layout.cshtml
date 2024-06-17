@@ -27,7 +27,7 @@
             <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
                     <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
-                        <img src="\images\logo.jpg" alt="Research Job Logo" style="max-width: 100px; height: auto;">
+                        <img src="\images\newlogo.jpg" alt="Academic Jobs Logo" style="max-width: 60px; height: auto;">
                     </a>
 
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
@@ -59,7 +59,29 @@
                     </div>
                 </div>
         </nav>
+            <script>
+                window.addEventListener('load', function () {
+                    var loadTime = performance.now();
+                    console.log("Page Load Time: " + loadTime.toFixed(2) + " ms");
 
+                    // Optional: Send the load time to the server for logging
+                    fetch('/Home/LogLoadTime', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ loadTime: loadTime.toFixed(2), path: window.location.pathname })
+                    }).then(response => {
+                        if (response.ok) {
+                            console.log("Load time logged successfully");
+                        } else {
+                            console.error("Failed to log load time");
+                        }
+                    }).catch(error => {
+                        console.error("Error logging load time:", error);
+                    });
+                });
+            </script>
     </header>
 
         
